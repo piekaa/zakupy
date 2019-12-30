@@ -11,11 +11,9 @@ class ResponseWriter {
 
     static void write(OutputStream outputStream, Response response) throws IOException {
 
-        byte[] text = "Siemano siemano mexicano tv otwiera wam drzwi".getBytes();
-
-        String responseString = "HTTP/1.1 " + response.statusCode + " gitarka" + CRLF +
+        byte[] text = "Hello world!".getBytes();
+        String responseString = "HTTP/1.1 " + response.statusCode + " good job!" + CRLF +
                 "Content-Length: " + text.length + CRLF + CRLF;
-
         ByteBuffer byteBuffer = new ByteBuffer();
         byteBuffer.add(responseString.getBytes());
         byteBuffer.add(text);
