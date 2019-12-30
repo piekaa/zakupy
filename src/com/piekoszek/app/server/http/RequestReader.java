@@ -2,12 +2,11 @@ package com.piekoszek.app.server.http;
 
 import com.piekoszek.app.collections.ByteBuffer;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 class RequestReader {
+
     static Request read(InputStream inputStream) {
-        System.out.println();
         ByteBuffer byteBuffer = new ByteBuffer();
         String requestLine;
         String headers;
@@ -36,18 +35,10 @@ class RequestReader {
                 }
             }
             headers = new String(byteBuffer.getAllBytes());
-
-            System.out.println("Request Line:");
-            System.out.println(requestLine);
-
-            System.out.println();
-            System.out.println("Headers:");
-            System.out.println(headers);
-
             return new Request(requestLine, headers);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Exception while reading request: " + e.getMessage());
         }
         return null;
     }

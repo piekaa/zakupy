@@ -22,7 +22,6 @@ public class TcpServer {
                 connectionHandler.handle(connection);
                 try {
                     socket.close();
-                    System.out.println("Connection closed");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

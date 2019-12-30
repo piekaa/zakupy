@@ -2,8 +2,8 @@ package com.piekoszek.app.collections;
 
 public class ByteBuffer {
 
-    byte[] bytes;
-    int nextPos;
+    private byte[] bytes;
+    private int nextPos;
 
     public ByteBuffer() {
         bytes = new byte[30];
