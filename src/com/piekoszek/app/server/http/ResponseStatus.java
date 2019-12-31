@@ -1,6 +1,6 @@
 package com.piekoszek.app.server.http;
 
-enum ResponseStatus {
+public enum ResponseStatus {
 
     OK(200, "ok"),
     NOT_FOUND(404, "not found");

@@ -6,8 +6,9 @@ import com.piekoszek.app.server.ConnectionHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.piekoszek.app.server.http.ResponseStatus.NOT_FOUND;
@@ -16,6 +17,8 @@ import static com.piekoszek.app.server.http.ResponseStatus.OK;
 public class HttpServer implements ConnectionHandler {
 
     private String staticPath;
+
+    private Map<String, MessageHandler> messageHandlerRegistry = new HashMap<>();
 
     public HttpServer() {
     }
@@ -31,24 +34,28 @@ public class HttpServer implements ConnectionHandler {
             if (request == null) {
                 break;
             }
-            if (!request.method.equals("GET")) {
-                break;
-            }
             try {
+                if (messageHandlerRegistry.containsKey(request.method + request.path)) {
+                    MessageHandler messageHandler = messageHandlerRegistry.get(request.method + request.path);
+                    ResponseWriter.write(connection.outputStream, messageHandler.handler(request));
+                }
+                if (!request.method.equals("GET")) {
+                    ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, "Not found"));
+                    continue;
+                }
                 if (staticPath != null) {
                     String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
-                    File file = new File(staticPath + request.path + (request.path.endsWith("/") ? "index.html" : ""));
+                    File file = new File(staticPath + filePath + (request.path.endsWith("/") ? "index.html" : ""));
                     try {
                         WholeFileReader reader = new WholeFileReader(file);
-                        if(request.path.endsWith(".png")) {
+                        if (request.path.endsWith(".png")) {
                             ResponseWriter.write(connection.outputStream, new ImageResponse(OK, reader.read()));
-                            continue;
                         } else {
                             ResponseWriter.write(connection.outputStream, new Response(OK, reader.read()));
-                            continue;
                         }
+                        continue;
                     } catch (FileNotFoundException e) {
-                        ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, filePath + " not found in server ;("));
+                        ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, request.path + " not found in server ;("));
                         continue;
                     }
                 }
@@ -57,5 +64,9 @@ public class HttpServer implements ConnectionHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void registerPost(String path, MessageHandler messageHandler) {
+        messageHandlerRegistry.put("POST" + path, messageHandler);
     }
 }
