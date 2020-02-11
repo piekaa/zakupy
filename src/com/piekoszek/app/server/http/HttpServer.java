@@ -18,8 +18,6 @@ public class HttpServer implements ConnectionHandler {
 
     private String staticPath;
 
-    private Map<String, MessageHandler> messageHandlerRegistry = new HashMap<>();
-
     public HttpServer() {
     }
 
@@ -35,10 +33,6 @@ public class HttpServer implements ConnectionHandler {
                 break;
             }
             try {
-                if (messageHandlerRegistry.containsKey(request.method + request.path)) {
-                    MessageHandler messageHandler = messageHandlerRegistry.get(request.method + request.path);
-                    ResponseWriter.write(connection.outputStream, messageHandler.handler(request));
-                }
                 if (!request.method.equals("GET")) {
                     ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, "Not found"));
                     continue;
@@ -48,11 +42,7 @@ public class HttpServer implements ConnectionHandler {
                     File file = new File(staticPath + filePath + (request.path.endsWith("/") ? "index.html" : ""));
                     try {
                         WholeFileReader reader = new WholeFileReader(file);
-                        if (request.path.endsWith(".png")) {
-                            ResponseWriter.write(connection.outputStream, new ImageResponse(OK, reader.read()));
-                        } else {
-                            ResponseWriter.write(connection.outputStream, new Response(OK, reader.read()));
-                        }
+                        ResponseWriter.write(connection.outputStream, new Response(OK, reader.read()));
                         continue;
                     } catch (FileNotFoundException e) {
                         ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, request.path + " not found in server ;("));
@@ -64,9 +54,5 @@ public class HttpServer implements ConnectionHandler {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void registerPost(String path, MessageHandler messageHandler) {
-        messageHandlerRegistry.put("POST" + path, messageHandler);
     }
 }
