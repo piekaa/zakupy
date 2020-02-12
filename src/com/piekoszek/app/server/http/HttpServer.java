@@ -43,7 +43,6 @@ public class HttpServer implements ConnectionHandler {
                 continue;
             } else {
                 file = new File(staticPath + filePath + "/index.html");
-                WholeFileReader reader = new WholeFileReader(file);
                 if (file.exists() && !file.isDirectory()) {
                     sendResponse(file, connection);
                     continue;
