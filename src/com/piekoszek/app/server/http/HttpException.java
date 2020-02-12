@@ -1,5 +1,11 @@
 package com.piekoszek.app.server.http;
 
-public class HttpException extends RuntimeException {
+class HttpException extends RuntimeException {
 
+    HttpException() {
+    }
+
+    HttpException(Throwable cause) {
+        super(cause);
+    }
 }

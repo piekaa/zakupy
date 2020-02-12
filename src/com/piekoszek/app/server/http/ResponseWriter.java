@@ -10,7 +10,7 @@ class ResponseWriter {
 
     private static final String CRLF = new String(new byte[]{13, 10});
 
-    static void write(OutputStream outputStream, Response response) throws IOException {
+    static void write(OutputStream outputStream, Response response) {
         byte[] body = response.responseBytes;
         String responseLine = response.responseStatus.toRequestLine() + CRLF;
         StringBuilder headers = new StringBuilder();
@@ -25,7 +25,11 @@ class ResponseWriter {
         byteBuffer.add((responseLine + headers).getBytes());
         byteBuffer.add(body);
 //        System.out.println(new String(byteBuffer.getAllBytes()));
-        outputStream.write(byteBuffer.getAllBytes());
+        try {
+            outputStream.write(byteBuffer.getAllBytes());
+        } catch (IOException e) {
+            throw new ResponseWriteException(e);
+        }
     }
 
 }

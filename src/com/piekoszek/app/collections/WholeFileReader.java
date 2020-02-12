@@ -10,14 +10,23 @@ public class WholeFileReader {
     private FileInputStream fileInputStream;
     private ByteBuffer byteBuffer;
 
-    public WholeFileReader(File file) throws FileNotFoundException {
-        fileInputStream = new FileInputStream(file);
+    public WholeFileReader(File file) {
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException();
+        }
         byteBuffer = new ByteBuffer();
     }
 
-    public byte[] read() throws IOException {
+    public byte[] read() {
         for (; ; ) {
-            int value = fileInputStream.read();
+            int value = 0;
+            try {
+                value = fileInputStream.read();
+            } catch (IOException e) {
+                throw new FileReadException(e);
+            }
             if (value == -1) {
                 break;
             }

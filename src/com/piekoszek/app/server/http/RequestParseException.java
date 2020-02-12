@@ -1,4 +1,7 @@
 package com.piekoszek.app.server.http;
 
-public class RequestParseException extends HttpException {
+class RequestParseException extends HttpException {
+
+    RequestParseException() {
+    }
 }

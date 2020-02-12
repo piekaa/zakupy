@@ -5,10 +5,6 @@ import com.piekoszek.app.server.Connection;
 import com.piekoszek.app.server.ConnectionHandler;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.piekoszek.app.server.http.ResponseStatus.NOT_FOUND;
@@ -32,27 +28,37 @@ public class HttpServer implements ConnectionHandler {
             if (request == null) {
                 break;
             }
-            try {
-                if (!request.method.equals("GET")) {
-                    ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, "Not found"));
+            if (!request.method.equals("GET")) {
+                ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, "Not found"));
+                continue;
+            }
+            if (staticPath == null) {
+                ResponseWriter.write(connection.outputStream, new Response(OK, "Hello world 2!"));
+                continue;
+            }
+            String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
+            File file = new File(staticPath + filePath + (request.path.endsWith("/") ? "index.html" : ""));
+            if (file.exists() && !file.isDirectory()) {
+                sendResponse(file, connection);
+                continue;
+            } else {
+                file = new File(staticPath + filePath + "/index.html");
+                WholeFileReader reader = new WholeFileReader(file);
+                if (file.exists() && !file.isDirectory()) {
+                    sendResponse(file, connection);
                     continue;
                 }
-                if (staticPath != null) {
-                    String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
-                    File file = new File(staticPath + filePath + (request.path.endsWith("/") ? "index.html" : ""));
-                    try {
-                        WholeFileReader reader = new WholeFileReader(file);
-                        ResponseWriter.write(connection.outputStream, new Response(OK, reader.read()));
-                        continue;
-                    } catch (FileNotFoundException e) {
-                        ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, request.path + " not found in server ;("));
-                        continue;
-                    }
-                }
-                ResponseWriter.write(connection.outputStream, new Response(OK, "Hello world 2!"));
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, request.path + " not found in server ;("));
         }
+    }
+
+    private void sendResponse(File file, Connection connection) {
+        WholeFileReader reader = new WholeFileReader(file);
+        Response response = new Response(OK, reader.read());
+        if (file.getPath().endsWith(".svg")) {
+            response.headers.put("Content-Type", "image/svg+xml");
+        }
+        ResponseWriter.write(connection.outputStream, response);
     }
 }
