@@ -5,6 +5,8 @@ import com.piekoszek.app.server.Connection;
 import com.piekoszek.app.server.ConnectionHandler;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.piekoszek.app.server.http.ResponseStatus.NOT_FOUND;
@@ -13,6 +15,8 @@ import static com.piekoszek.app.server.http.ResponseStatus.OK;
 public class HttpServer implements ConnectionHandler {
 
     private String staticPath;
+
+    private Map<String, MessageHandler> endpoints = new HashMap<>();
 
     public HttpServer() {
     }
@@ -28,6 +32,12 @@ public class HttpServer implements ConnectionHandler {
             if (request == null) {
                 break;
             }
+
+            String endpointKey = request.method + request.path;
+            if (endpoints.containsKey(endpointKey)) {
+                ResponseWriter.write(connection.outputStream, endpoints.get(endpointKey).handle(request));
+            }
+
             if (!request.method.equals("GET")) {
                 ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, "Not found"));
                 continue;
@@ -50,6 +60,10 @@ public class HttpServer implements ConnectionHandler {
             }
             ResponseWriter.write(connection.outputStream, new Response(NOT_FOUND, request.path + " not found in server ;("));
         }
+    }
+
+    public void register(String method, String path, MessageHandler messageHandler) {
+        endpoints.put(method + path, messageHandler);
     }
 
     private void sendResponse(File file, Connection connection) {
