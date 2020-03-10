@@ -14,9 +14,8 @@ public class Main {
 
         httpServer.register(CalculatorConfig.controller().endpoints());
 
-        httpServer.register(new EndpointInfo(
-                "POST", "/priviet", ((requestInfo, body) -> "siemaneczko " + body), String.class)
-        );
+        httpServer.register(new EndpointInfo("POST", "/priviet", ((requestInfo, body) -> "siemaneczko " + requestInfo.getRequest().bodyText()), Object.class));
+        httpServer.register(new EndpointInfo("POST", "/priviet2", ((requestInfo, body) -> "siemaneczko " + body), String.class));
 
         new TcpServer(httpServer);
     }

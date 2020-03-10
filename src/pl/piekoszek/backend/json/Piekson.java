@@ -157,7 +157,6 @@ public class Piekson {
         if (result instanceof Map) {
             return (T) parseObject(type, (Map<String, Object>) result);
         }
-
         if (result instanceof Long && type.isAssignableFrom(Integer.class)) {
             return (T) (Integer) ((Number) result).intValue();
         }
@@ -166,11 +165,23 @@ public class Piekson {
             return (T) (Float) ((Number) result).floatValue();
         }
 
-        if (result.getClass().isArray()) {
+        if (type.isArray()) {
             return (T) createArray(type.getComponentType(), result);
         }
 
+        if (Collection.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException("for collections use fromJson(String json, Class<T> type, Class<T> elementType)");
+        }
+
         return (T) result;
+    }
+
+    public static <T, Y> T fromJson(String json, Class<T> type, Class<Y> elementType) {
+        if (!Collection.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException("Only collections");
+        }
+        Object result = parseJson(json);
+        return (T) createCollection(type, elementType, result);
     }
 
     private static Object parseObject(Class objectsClass, Map<String, Object> map) {
@@ -192,16 +203,8 @@ public class Piekson {
                 } else if (field.getType().isArray()) {
                     setValue(instance, field, createArray(field.getType().getComponentType(), v));
                 } else if (Collection.class.isAssignableFrom(field.getType())) {
-                    Map<String, Object>[] arr = (Map<String, Object>[]) v;
-                    List collectionToSet = new ArrayList();
-                    for (int i = 0; i < arr.length; i++) {
-                        collectionToSet.add(parseObject((Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0], arr[i]));
-                    }
-                    if (field.getType() == Set.class) {
-                        setValue(instance, field, new HashSet(collectionToSet));
-                    } else if (field.getType() == List.class) {
-                        setValue(instance, field, collectionToSet);
-                    }
+                    Object collection = createCollection(field.getType(), (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0], v);
+                    setValue(instance, field, collection);
                 } else {
                     setValue(instance, field, v);
                 }
@@ -245,6 +248,25 @@ public class Piekson {
         return arrayToSet;
     }
 
+    private static Object createCollection(Class<?> type, Class<?> componentType, Object collection) {
+
+        List collectionToSet = new ArrayList();
+        if (collection instanceof Map[]) {
+            Map<String, Object>[] arr = (Map<String, Object>[]) collection;
+            for (int i = 0; i < arr.length; i++) {
+                collectionToSet.add(parseObject(componentType, arr[i]));
+            }
+        } else {
+            Object array = createArray(collection.getClass().getComponentType(), collection);
+            for (int i = 0; i < Array.getLength(array); i++) {
+                collectionToSet.add(Array.get(array, i));
+            }
+        }
+        if (type == Set.class) {
+            return new HashSet(collectionToSet);
+        }
+        return collectionToSet;
+    }
 
     private static void setValue(Object object, Field field, Object value) {
         try {
@@ -275,21 +297,33 @@ public class Piekson {
         stack.add(new X(KEY_BEGIN, 'v'));
         mapStack.push(new HashMap<>());
 
+        boolean escape = false;
         for (int i = 0; i < json.length(); i++) {
             char c = json.charAt(i);
             if (t.skipBlank && Character.isWhitespace(c)) {
                 continue;
             }
-            T nt = Arrays.stream(tt.get(t)).filter(e -> e.p.matcher("" + c).matches())
-                    .findFirst()
-                    .orElse(null);
-            if (nt == null) {
-                throw new PieksonException("Error parsing json at " + json.substring(0, i) + " expected any of " + Arrays.toString(tt.get(t)));
+
+            if (t.escapable && c == '\\') {
+                escape = true;
+                continue;
+            }
+            T nt;
+            if (escape) {
+                nt = t;
+            } else {
+                nt = Arrays.stream(tt.get(t)).filter(e -> e.p.matcher("" + c).matches())
+                        .findFirst()
+                        .orElse(null);
+                if (nt == null) {
+                    throw new PieksonException("Error parsing json at " + json.substring(0, i) + " index: " + i + " expected any of " + Arrays.toString(tt.get(t)));
+                }
             }
 
             nt.stackFunction.handle(stack, mapStack, nt, c);
 
             t = nt;
+            escape = false;
         }
 
         if (!stack.isEmpty()) {
@@ -344,7 +378,7 @@ public class Piekson {
         if (value instanceof Number || value instanceof Boolean) {
             return value.toString();
         } else if (value instanceof String) {
-            return ("\"") + (value) + ("\"");
+            return ("\"") + (((String) value).replaceAll("\"", "\\\\\"") + ("\""));
         } else {
             return toJson(value);
         }
