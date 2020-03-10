@@ -1,4 +1,4 @@
-package com.piekoszek.app.collections;
+package pl.piekoszek.backend.collections;
 
 import java.io.File;
 import java.io.FileInputStream;

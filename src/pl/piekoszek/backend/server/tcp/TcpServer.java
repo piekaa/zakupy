@@ -1,7 +1,7 @@
-package com.piekoszek.app.server.tcp;
+package pl.piekoszek.backend.server.tcp;
 
-import com.piekoszek.app.server.Connection;
-import com.piekoszek.app.server.ConnectionHandler;
+import pl.piekoszek.backend.server.Connection;
+import pl.piekoszek.backend.server.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;

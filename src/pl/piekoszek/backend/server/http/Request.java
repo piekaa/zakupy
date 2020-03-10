@@ -1,4 +1,4 @@
-package com.piekoszek.app.server.http;
+package pl.piekoszek.backend.server.http;
 
 import java.util.Map;
 

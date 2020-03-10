@@ -1,4 +1,4 @@
-package com.piekoszek.app.server.http;
+package pl.piekoszek.backend.server.http;
 
 public class ResponseWriteException extends HttpException {
 

@@ -1,4 +1,4 @@
-package com.piekoszek.app.server;
+package pl.piekoszek.backend.server;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package com.piekoszek.app.server;
+package pl.piekoszek.backend.server;
 
 public interface ConnectionHandler {
 

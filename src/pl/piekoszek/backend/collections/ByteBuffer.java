@@ -1,4 +1,4 @@
-package com.piekoszek.app.collections;
+package pl.piekoszek.backend.collections;
 
 public class ByteBuffer {
 

@@ -1,4 +1,4 @@
-package com.piekoszek.app.server.http;
+package pl.piekoszek.backend.server.http;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,5 +17,9 @@ public class Response {
     public Response(ResponseStatus responseStatus, byte[] responseBody) {
         this.responseStatus = responseStatus;
         this.responseBytes = responseBody;
+    }
+
+    void addHeader(String name, String value) {
+        headers.put(name, value);
     }
 }

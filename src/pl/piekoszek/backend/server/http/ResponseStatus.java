@@ -1,9 +1,10 @@
-package com.piekoszek.app.server.http;
+package pl.piekoszek.backend.server.http;
 
 public enum ResponseStatus {
 
     OK(200, "dla mnie się podoba"),
-    NOT_FOUND(404, "takiego czegoś na pewno nigdy nie było");
+    NOT_FOUND(404, "takiego czegoś na pewno nigdy nie było"),
+    INTERNAL_SERVER_ERROR(500, "coś, coś się popsuło i nie było mnie słychać");
 
     public final int code;
     public final String message;
