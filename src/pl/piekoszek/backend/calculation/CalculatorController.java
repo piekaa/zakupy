@@ -8,7 +8,7 @@ class CalculatorController implements EndpointsProvider {
 
     private Calculator calculator;
 
-    public CalculatorController(Calculator calculator) {
+    CalculatorController(Calculator calculator) {
         this.calculator = calculator;
     }
 

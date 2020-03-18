@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.json;
+package pl.piekoszek.json;
 
 import java.lang.reflect.Array;
 import java.util.*;

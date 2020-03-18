@@ -1,11 +1,13 @@
-package pl.piekoszek.backend.json;
+package pl.piekoszek.json;
+
+import pl.piekoszek.collections.ByteReader;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
-import static pl.piekoszek.backend.json.T.*;
+import static pl.piekoszek.json.T.*;
 
 public class Piekson {
 
@@ -190,7 +192,7 @@ public class Piekson {
         try {
             instance = objectsClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            return new PieksonException(e);
+            throw new PieksonException(e);
         }
 
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -339,8 +341,17 @@ public class Piekson {
             return encodeValue(object);
         }
 
+        if (object instanceof Collection) {
+            return encodeCollection((Collection) object);
+        }
+
+        if (object.getClass().isArray()) {
+            return encodeArray(object);
+        }
+
         Field[] fields = object.getClass().getFields();
         StringBuilder result = new StringBuilder("{");
+
         try {
             for (Field field : fields) {
                 Object value = field.get(object);
@@ -348,21 +359,9 @@ public class Piekson {
                     result.append(result.length() > 1 ? "," : "");
                     result.append("\"").append(field.getName()).append("\":");
                     if (value.getClass().isArray()) {
-                        result.append("[");
-                        for (int i = 0; i < Array.getLength(value); i++) {
-                            result.append(i > 0 ? "," : "");
-                            result.append(encodeValue(Array.get(value, i)));
-                        }
-                        result.append("]");
+                        result.append(encodeArray(value));
                     } else if (value instanceof Collection) {
-                        result.append("[");
-                        int i = 0;
-                        for (Object item : (Collection) value) {
-                            result.append(i > 0 ? "," : "");
-                            result.append(encodeValue(item));
-                            i++;
-                        }
-                        result.append("]");
+                        result.append(encodeCollection((Collection) value));
                     } else {
                         result.append(encodeValue(value));
                     }
@@ -372,6 +371,162 @@ public class Piekson {
             throw new PieksonException(e);
         }
         return result + "}";
+    }
+
+    private static String encodeCollection(Collection collection) {
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        int i = 0;
+        for (Object item : (Collection) collection) {
+            result.append(i > 0 ? "," : "");
+            result.append(encodeValue(item));
+            i++;
+        }
+        result.append("]");
+        return result.toString();
+    }
+
+    private static String encodeArray(Object array) {
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        for (int i = 0; i < Array.getLength(array); i++) {
+            result.append(i > 0 ? "," : "");
+            result.append(encodeValue(Array.get(array, i)));
+        }
+        result.append("]");
+        return result.toString();
+    }
+
+    public static byte[] toBson(Map<String, Object> map) {
+        return toBsonStep(map).get();
+    }
+
+    private static Bson toBsonStep(Map<String, Object> map) {
+        Bson bson = new Bson();
+        for (Map.Entry<String, Object> kv : map.entrySet()) {
+            if (kv.getValue() instanceof Integer) {
+                bson.add(kv.getKey(), (Integer) kv.getValue());
+            } else if (kv.getValue() instanceof Long) {
+                bson.add(kv.getKey(), (Long) kv.getValue());
+            } else if (kv.getValue() instanceof Double) {
+                bson.add(kv.getKey(), (Double) kv.getValue());
+            } else if (kv.getValue() instanceof String) {
+                bson.add(kv.getKey(), (String) kv.getValue());
+            } else if (kv.getValue() instanceof Map) {
+                bson.addObject(kv.getKey(), toBsonStep((Map) kv.getValue()));
+            } else if (kv.getValue().getClass().isArray()) {
+                bson.addArray(kv.getKey(), toBsonArrayStep((Object[]) kv.getValue()));
+            }
+        }
+        return bson;
+    }
+
+    private static Bson toBsonArrayStep(Object[] array) {
+        Bson bson = new Bson(true);
+
+        for (int i = 0; i < Array.getLength(array); i++) {
+
+            Object value = Array.get(array, i);
+
+            if (value instanceof Integer) {
+                bson.addArrayItem((Integer) value);
+            } else if (value instanceof Long) {
+                bson.addArrayItem((Long) value);
+            } else if (value instanceof Double) {
+                bson.addArrayItem((Double) value);
+            } else if (value instanceof String) {
+                bson.addArrayItem((String) value);
+            } else if (value instanceof Map) {
+                bson.addObjectToArray(toBsonStep((Map) value));
+            } else if (value.getClass().isArray()) {
+                bson.addArrayToArray(toBsonArrayStep((Object[]) value));
+            }
+        }
+        return bson;
+    }
+
+    public static Map<String, Object> fromBson(byte[] bson) {
+        return fromBsonStep(new ByteReader(bson));
+    }
+
+    public static <T> T fromBson(byte[] bson, Class<T> type) {
+        try {
+            return (T) parseObject(type, fromBsonStep(new ByteReader(bson)));
+        } catch (UnsupportedElementType e) {
+            e.parsedObject = parseObject(type, e.parsedSoFar);
+            throw e;
+        }
+    }
+
+    private static Map<String, Object> fromBsonStep(ByteReader byteReader) {
+        Map<String, Object> result = new HashMap<>();
+        int size = byteReader.readInt();
+        for (; ; ) {
+            byte elementType = byteReader.readByte();
+            if (elementType == 0) {
+                break;
+            }
+            if (elementType == Bson.INT) {
+                result.put(byteReader.readCString(), byteReader.readInt());
+            } else if (elementType == Bson.LONG) {
+                result.put(byteReader.readCString(), byteReader.readLong());
+            } else if (elementType == Bson.DOUBLE) {
+                result.put(byteReader.readCString(), byteReader.readDouble());
+            } else if (elementType == Bson.STRING) {
+                result.put(byteReader.readCString(), byteReader.readString());
+            } else if (elementType == Bson.OBJECT) {
+                result.put(byteReader.readCString(), fromBsonStep(byteReader));
+            } else if (elementType == Bson.ARRAY) {
+                result.put(byteReader.readCString(), fromBsonStepArray(byteReader));
+            } else {
+                throw new UnsupportedElementType("Unsupported element type: " + elementType, result);
+            }
+        }
+        return result;
+    }
+
+    private static Object[] fromBsonStepArray(ByteReader byteReader) {
+        List<Object> result = new ArrayList<>();
+        int size = byteReader.readInt();
+        for (; ; ) {
+            byte elementType = byteReader.readByte();
+            if (elementType == 0) {
+                break;
+            }
+            if (elementType == Bson.INT) {
+                byteReader.readCString();
+                result.add(byteReader.readInt());
+            }
+            if (elementType == Bson.LONG) {
+                byteReader.readCString();
+                result.add(byteReader.readLong());
+            }
+            if (elementType == Bson.DOUBLE) {
+                byteReader.readCString();
+                result.add(byteReader.readDouble());
+            }
+            if (elementType == Bson.STRING) {
+                byteReader.readCString();
+                result.add(byteReader.readString());
+            }
+            if (elementType == Bson.OBJECT) {
+                byteReader.readCString();
+                result.add(fromBsonStep(byteReader));
+            }
+            if (elementType == Bson.ARRAY) {
+                byteReader.readCString();
+                result.add(fromBsonStepArray(byteReader));
+            }
+        }
+        return result.toArray();
+    }
+
+    public static byte[] toBson(Object object) {
+        return toBson(fromJson(toJson(object)));
+    }
+
+    public static byte[] jsonToBson(String json) {
+        return toBson(fromJson(json));
     }
 
     private static String encodeValue(Object value) {

@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.json;
+package pl.piekoszek.json;
 
 import java.util.regex.Pattern;
 
@@ -19,7 +19,7 @@ enum T {
     VALUE_END(Pattern.compile("\""), true, false, new SetValueIfExistsAndNotArray()), // think about arrays
     ARRAY_VALUE_END(Pattern.compile("\""), true, false, new SetValueIfExistsAndNotArray()), // think about arrays
     KEY_BEGIN(Pattern.compile("\""), false, false, new Push()),
-    KEY(Pattern.compile("[a-zA-Z0-9]"), false, false, new Append()),
+    KEY(Pattern.compile("[a-zA-Z0-9_$]"), false, false, new Append()),
     KEY_END(Pattern.compile("\""), true, false, new Idle()),
     KEY_VALUE_SEPARATOR(Pattern.compile(":"), true, false, new Idle()),
     VALUES_SEPARATOR(Pattern.compile(","), true, false, new SetIfNotArray()),

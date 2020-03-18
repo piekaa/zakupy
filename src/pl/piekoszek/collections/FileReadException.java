@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.collections;
+package pl.piekoszek.collections;
 
 class FileReadException extends RuntimeException {
 

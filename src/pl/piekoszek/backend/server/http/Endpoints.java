@@ -1,16 +1,18 @@
 package pl.piekoszek.backend.server.http;
 
-import pl.piekoszek.backend.json.Piekson;
-import pl.piekoszek.backend.server.Connection;
+import pl.piekoszek.backend.tcp.Connection;
+import pl.piekoszek.json.Piekson;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 class Endpoints {
 
     private Map<String, EndpointInfo> endpoints = new HashMap<>();
+    private Map<Pattern, EndpointInfo> endpointsWithPathParams = new HashMap<>();
 
     void register(EndpointInfo[] endpointInfos) {
         for (EndpointInfo endpointInfo : endpointInfos) {
@@ -19,35 +21,65 @@ class Endpoints {
     }
 
     void register(EndpointInfo endpointInfo) {
-        endpoints.put(endpointInfo.getMethod() + endpointInfo.getPath(), endpointInfo);
+        if (endpointInfo.pathPattern != null) {
+            endpointsWithPathParams.put(endpointInfo.pathPattern, endpointInfo);
+        } else {
+            endpoints.put(endpointInfo.getMethod() + endpointInfo.getPath(), endpointInfo);
+        }
     }
 
     boolean handleMessageIfRegistered(Request request, Connection connection) {
         String endpointKey = request.method + request.path;
 
-        if (!endpoints.containsKey(endpointKey)) {
-            return false;
+        EndpointInfo endpointInfo = null;
+        RequestInfo requestInfo = new RequestInfo(request);
+
+        if (endpoints.containsKey(endpointKey)) {
+            endpointInfo = endpoints.get(endpointKey);
+        } else {
+            endpointKey+="/";
+            for (Map.Entry<Pattern, EndpointInfo> entry : endpointsWithPathParams.entrySet()) {
+                if (entry.getKey().matcher(endpointKey).matches()) {
+                    endpointInfo = entry.getValue();
+                    String[] splittedPath = request.path.split("/");
+                    for (int i = 0; i < endpointInfo.positions.size(); i++) {
+                        requestInfo.pathParams.put(endpointInfo.pathParamNames.get(i), splittedPath[endpointInfo.positions.get(i)]);
+                    }
+                }
+            }
         }
 
-        EndpointInfo endpointInfo = endpoints.get(endpointKey);
+        if (endpointInfo == null) {
+            return false;
+        }
 
         Object requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
         Object result;
         try {
             Method method = endpointInfo.getMessageHandler().getClass().getMethods()[0];
             method.setAccessible(true);
-            result = method.invoke(endpointInfo.getMessageHandler(), new RequestInfo(request), requestBody);
+            result = method.invoke(endpointInfo.getMessageHandler(), requestInfo, requestBody);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return false;
         }
 
+        ResponseStatus responseStatus = ResponseStatus.OK;
+
         String responseBodyString = "";
         if (result != null) {
-            responseBodyString = Piekson.toJson(result);
+            Object body = result;
+            if (result instanceof ResponseInfo) {
+                ResponseInfo responseInfo = (ResponseInfo) result;
+                responseStatus = responseInfo.responseStatus;
+                if (responseInfo.responseBody != null) {
+                    body = responseInfo.responseBody;
+                }
+            }
+            responseBodyString = Piekson.toJson(body);
         }
 
-        Response response = new Response(ResponseStatus.OK, responseBodyString);
+        Response response = new Response(responseStatus, responseBodyString);
         response.addHeader("Content-Type", "application/json");
 
         ResponseWriter.write(connection.outputStream, response);

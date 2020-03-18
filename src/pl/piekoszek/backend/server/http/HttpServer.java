@@ -1,8 +1,8 @@
 package pl.piekoszek.backend.server.http;
 
-import pl.piekoszek.backend.collections.WholeFileReader;
-import pl.piekoszek.backend.server.Connection;
-import pl.piekoszek.backend.server.ConnectionHandler;
+import pl.piekoszek.backend.tcp.Connection;
+import pl.piekoszek.backend.tcp.ConnectionHandler;
+import pl.piekoszek.collections.WholeFileReader;
 
 import java.io.File;
 import java.util.regex.Matcher;

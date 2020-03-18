@@ -1,6 +1,6 @@
 package pl.piekoszek.backend.server.http;
 
-import pl.piekoszek.backend.collections.ByteBuffer;
+import pl.piekoszek.collections.ByteBuffer;
 
 import java.io.InputStream;
 import java.util.HashMap;
