@@ -23,6 +23,9 @@ public class Main {
         httpServer.register(new EndpointInfo("POST", "/priviet", ((requestInfo, body) -> "siemaneczko " + requestInfo.getRequest().bodyText()), Object.class));
         httpServer.register(new EndpointInfo("POST", "/priviet2", ((requestInfo, body) -> "siemaneczko " + body), String.class));
 
+        httpServer.register(new EndpointInfo("GET", "/kochane/:dzieci/pocalujcie/:misia/w/:dupe", (info, body) ->
+                info.getPathParams().get("dzieci")+" - " + info.getPathParams().get("misia") + " - " + info.getPathParams().get("dupe"), Object.class));
+
         new TcpServer(httpServer, 7000);
     }
 

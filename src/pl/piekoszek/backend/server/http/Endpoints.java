@@ -37,7 +37,7 @@ class Endpoints {
         if (endpoints.containsKey(endpointKey)) {
             endpointInfo = endpoints.get(endpointKey);
         } else {
-            endpointKey+="/";
+            endpointKey += endpointKey.endsWith("/") ? "" : "/";
             for (Map.Entry<Pattern, EndpointInfo> entry : endpointsWithPathParams.entrySet()) {
                 if (entry.getKey().matcher(endpointKey).matches()) {
                     endpointInfo = entry.getValue();
