@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.server.http;
+package pl.piekoszek.backend.http.server;
 
 import pl.piekoszek.backend.tcp.Connection;
 import pl.piekoszek.json.Piekson;
@@ -53,7 +53,12 @@ class Endpoints {
             return false;
         }
 
-        Object requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+        Object requestBody;
+        if (endpointInfo.getRequestBodyClass() == Map.class) {
+            requestBody = Piekson.fromJson(request.bodyText());
+        } else {
+            requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+        }
         Object result;
         try {
             Method method = endpointInfo.getMessageHandler().getClass().getMethods()[0];

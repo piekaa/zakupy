@@ -1,8 +1,8 @@
 package pl.piekoszek.backend.calculation;
 
-import pl.piekoszek.backend.server.http.EndpointInfo;
-import pl.piekoszek.backend.server.http.EndpointsProvider;
-import pl.piekoszek.backend.server.http.MessageHandler;
+import pl.piekoszek.backend.http.server.EndpointInfo;
+import pl.piekoszek.backend.http.server.EndpointsProvider;
+import pl.piekoszek.backend.http.server.MessageHandler;
 
 class CalculatorController implements EndpointsProvider {
 
@@ -17,7 +17,7 @@ class CalculatorController implements EndpointsProvider {
     @Override
     public EndpointInfo[] endpoints() {
         return new EndpointInfo[]{
-                new EndpointInfo("POST", "/calc/add", add, AddRequest.class)
+                new EndpointInfo("POST", "/calc/addLengthAndString", add, AddRequest.class)
         };
     }
 }

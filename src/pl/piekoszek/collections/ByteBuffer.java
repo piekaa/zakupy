@@ -25,6 +25,10 @@ public class ByteBuffer {
         return this;
     }
 
+    public ByteBuffer add(String string) {
+        return add(string.getBytes());
+    }
+
     public ByteBuffer addLittleEndian(int value) {
         return add(new byte[]{
                 (byte) (value & 0xff),
@@ -46,6 +50,7 @@ public class ByteBuffer {
                 (byte) ((value >> 56) & 0xff),
         });
     }
+
     public ByteBuffer addLittleEndian(double value) {
         long l = Double.doubleToRawLongBits(value);
         return addLittleEndian(l);
@@ -56,9 +61,9 @@ public class ByteBuffer {
         return add(string.getBytes()).add((byte) 0);
     }
 
-    public ByteBuffer add(String string) {
+    public ByteBuffer addLengthAndString(String string) {
         byte[] strBytes = string.getBytes();
-        return addLittleEndian(strBytes.length+1).add(string.getBytes()).add((byte) 0);
+        return addLittleEndian(strBytes.length + 1).add(string.getBytes()).add((byte) 0);
     }
 
     public boolean endsWith1310() {

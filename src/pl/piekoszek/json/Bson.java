@@ -47,7 +47,7 @@ class Bson {
     }
 
     Bson add(String name, String value) {
-        byteBuffer.add(STRING).addCString(name).add(value);
+        byteBuffer.add(STRING).addCString(name).addLengthAndString(value);
         return this;
     }
 
@@ -89,7 +89,7 @@ class Bson {
     }
 
     Bson addArrayItem(String value) {
-        byteBuffer.add(STRING).addCString(arrays.peek().toString()).add(value);
+        byteBuffer.add(STRING).addCString(arrays.peek().toString()).addLengthAndString(value);
         arrays.push(arrays.pop() + 1);
         return this;
     }

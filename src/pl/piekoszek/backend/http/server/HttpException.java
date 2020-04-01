@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.server.http;
+package pl.piekoszek.backend.http.server;
 
 class HttpException extends RuntimeException {
 

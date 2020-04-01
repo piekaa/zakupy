@@ -349,35 +349,37 @@ public class Piekson {
             return encodeArray(object);
         }
 
+        if (object instanceof Map) {
+            return encodeMap((Map<String, Object>) object);
+        }
+
         Field[] fields = object.getClass().getFields();
         StringBuilder result = new StringBuilder("{");
 
         try {
             for (Field field : fields) {
                 Object value = field.get(object);
-                if (value != null) {
-                    result.append(result.length() > 1 ? "," : "");
-                    result.append("\"").append(field.getName()).append("\":");
-                    if (value.getClass().isArray()) {
-                        result.append(encodeArray(value));
-                    } else if (value instanceof Collection) {
-                        result.append(encodeCollection((Collection) value));
-                    } else {
-                        result.append(encodeValue(value));
-                    }
-                }
+                encodeObjectValueAndAppend(result, field.getName(), value);
             }
         } catch (IllegalAccessException e) {
             throw new PieksonException(e);
         }
-        return result + "}";
+        return result.append("}").toString();
+    }
+
+    private static String encodeMap(Map<String, Object> map) {
+        StringBuilder result = new StringBuilder("{");
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            encodeObjectValueAndAppend(result, entry.getKey(), entry.getValue());
+        }
+        return result.append("}").toString();
     }
 
     private static String encodeCollection(Collection collection) {
         StringBuilder result = new StringBuilder();
         result.append("[");
         int i = 0;
-        for (Object item : (Collection) collection) {
+        for (Object item : collection) {
             result.append(i > 0 ? "," : "");
             result.append(encodeValue(item));
             i++;
@@ -395,6 +397,22 @@ public class Piekson {
         }
         result.append("]");
         return result.toString();
+    }
+
+    private static void encodeObjectValueAndAppend(StringBuilder jsonFragment, String key, Object value) {
+        if (value != null) {
+            jsonFragment.append(jsonFragment.length() > 1 ? "," : "");
+            jsonFragment.append("\"").append(key).append("\":");
+            if (value.getClass().isArray()) {
+                jsonFragment.append(encodeArray(value));
+            } else if (value instanceof Collection) {
+                jsonFragment.append(encodeCollection((Collection) value));
+            } else if (value instanceof Map) {
+                jsonFragment.append(encodeMap((Map<String, Object>) value));
+            } else {
+                jsonFragment.append(encodeValue(value));
+            }
+        }
     }
 
     public static byte[] toBson(Map<String, Object> map) {

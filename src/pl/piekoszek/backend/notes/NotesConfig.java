@@ -1,6 +1,6 @@
 package pl.piekoszek.backend.notes;
 
-import pl.piekoszek.backend.server.http.EndpointsProvider;
+import pl.piekoszek.backend.http.server.EndpointsProvider;
 import pl.piekoszek.mongo.Mongo;
 
 public class NotesConfig {

@@ -1,6 +1,6 @@
 package pl.piekoszek.backend.notes;
 
-import pl.piekoszek.backend.server.http.*;
+import pl.piekoszek.backend.http.server.*;
 import pl.piekoszek.mongo.Mongo;
 
 import java.util.UUID;

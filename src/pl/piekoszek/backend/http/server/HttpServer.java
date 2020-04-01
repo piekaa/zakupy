@@ -1,4 +1,4 @@
-package pl.piekoszek.backend.server.http;
+package pl.piekoszek.backend.http.server;
 
 import pl.piekoszek.backend.tcp.Connection;
 import pl.piekoszek.backend.tcp.ConnectionHandler;
