@@ -7,12 +7,13 @@ import java.util.Stack;
 class Bson {
 
     static final byte INT = 0x10;
-    static final byte LONG = 0x09;
+    static final byte LONG = 0x12;
     static final byte DOUBLE = 0x01;
     static final byte STRING = 0x02;
     static final byte OBJECT = 0x03;
     static final byte OBJECT_END = 0x00;
     static final byte ARRAY = 0x04;
+    static final byte NULL = 0x0A;
 
     private ByteBuffer byteBuffer = new ByteBuffer();
 
@@ -29,6 +30,11 @@ class Bson {
     }
 
     Bson() {
+    }
+
+    Bson addNull(String name) {
+        byteBuffer.add(NULL).addCString(name);
+        return this;
     }
 
     Bson add(String name, int value) {

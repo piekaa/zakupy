@@ -422,7 +422,9 @@ public class Piekson {
     private static Bson toBsonStep(Map<String, Object> map) {
         Bson bson = new Bson();
         for (Map.Entry<String, Object> kv : map.entrySet()) {
-            if (kv.getValue() instanceof Integer) {
+            if (kv.getValue() == null) {
+                bson.addNull(kv.getKey());
+            } else if (kv.getValue() instanceof Integer) {
                 bson.add(kv.getKey(), (Integer) kv.getValue());
             } else if (kv.getValue() instanceof Long) {
                 bson.add(kv.getKey(), (Long) kv.getValue());
@@ -438,6 +440,40 @@ public class Piekson {
         }
         return bson;
     }
+
+
+    private static Bson toBsonStep(Object obj) {
+        Bson bson = new Bson();
+
+        for (Field field : obj.getClass().getFields()) {
+            try {
+                Object value = field.get(obj);
+                String name = field.getName();
+                if (value == null) {
+                    bson.addNull(field.getName());
+                } else if (value instanceof Integer) {
+                    bson.add(name, (Integer) value);
+                } else if (value instanceof Long) {
+                    bson.add(name, (Long) value);
+                } else if (value instanceof Double) {
+                    bson.add(name, (Double) value);
+                } else if (value instanceof String) {
+                    bson.add(name, (String) value);
+                } else if (value instanceof Map) {
+                    bson.addObject(name, toBsonStep((Map) value));
+                } else if (value.getClass().isArray()) {
+                    bson.addArray(name, toBsonArrayStep((Object[]) value));
+                } else {
+                    bson.addObject(name, toBsonStep(value));
+                }
+            } catch (IllegalAccessException e) {
+                throw new PieksonException(e);
+            }
+        }
+
+        return bson;
+    }
+
 
     private static Bson toBsonArrayStep(Object[] array) {
         Bson bson = new Bson(true);
@@ -540,7 +576,7 @@ public class Piekson {
     }
 
     public static byte[] toBson(Object object) {
-        return toBson(fromJson(toJson(object)));
+        return toBsonStep(object).get();
     }
 
     public static byte[] jsonToBson(String json) {
