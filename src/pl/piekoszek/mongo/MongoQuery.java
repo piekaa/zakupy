@@ -16,8 +16,8 @@ class MongoQuery {
         ByteBuffer buffer = new ByteBuffer();
 
         buffer.addLittleEndian(0); //flags
-        buffer.add((db + "." + collection).getBytes());
-        buffer.add((byte) 0); // 0 after collection
+        buffer.addCString(db + "." + collection);
+
         buffer.addLittleEndian(0); // number of documents to skip
         buffer.addLittleEndian(100); // number of documents to return
 

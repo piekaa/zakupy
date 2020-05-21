@@ -29,7 +29,13 @@ class Endpoints {
     }
 
     boolean handleMessageIfRegistered(Request request, Connection connection) {
-        String endpointKey = request.method + request.path;
+        String path;
+        if (request.path.contains("?")) {
+            path = request.path.substring(0, request.path.indexOf('?'));
+        } else {
+            path = request.path;
+        }
+        String endpointKey = request.method + path;
 
         EndpointInfo endpointInfo = null;
         RequestInfo requestInfo = new RequestInfo(request);
@@ -53,11 +59,13 @@ class Endpoints {
             return false;
         }
 
-        Object requestBody;
-        if (endpointInfo.getRequestBodyClass() == Map.class) {
-            requestBody = Piekson.fromJson(request.bodyText());
-        } else {
-            requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+        Object requestBody = new Object();
+        if (request.body.length > 0) {
+            if (endpointInfo.getRequestBodyClass() == Map.class) {
+                requestBody = Piekson.fromJson(request.bodyText());
+            } else {
+                requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+            }
         }
         Object result;
         try {

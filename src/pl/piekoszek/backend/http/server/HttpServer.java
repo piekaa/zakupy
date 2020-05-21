@@ -47,6 +47,11 @@ public class HttpServer implements ConnectionHandler {
                     continue;
                 }
                 String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
+
+                if( filePath.contains("?")) {
+                    filePath = filePath.substring(0, filePath.indexOf("?"));
+                }
+
                 File file = new File(staticPath + filePath + (request.path.endsWith("/") ? "index.html" : ""));
                 if (file.exists() && !file.isDirectory()) {
                     sendResponse(file, connection);

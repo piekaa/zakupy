@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Biere</title>
+    <link rel="stylesheet" type="text/css" href="shop-common.css">
+    <link rel="stylesheet" type="text/css" href="shop-order.css">
+</head>
+<body>
+
+<a href="skliep.html" class="top">
+    Samopomoc chłopska
+</a>
+
+<div id="main" class="main">
+
+</div>
+
+</body>
+
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    product = undefined;
+
+    fetch(`/gs/product/${id}`).then(res => res.json()).then(json => {
+
+        product = json;
+
+        let mainDiv = document.getElementById("main");
+        let productDiv = document.createElement("div");
+
+        productDiv.classList.add("product");
+
+        productDiv.innerHTML = `
+        <div class="product-name">${json.name}</div>
+        <img class="product-image" src="${json.imagePath}"/>
+        <div class="product-bottom">
+            <div class="product-price">${json.price / 100} PLN</div>
+            <div class="product-buy-button" onclick="placeOrder()" >Płacę i placzę</div>
+        </div>`;
+
+        mainDiv.appendChild(productDiv);
+
+    });
+
+    function placeOrder() {
+
+        fetch("gs/order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    product: product,
+                    buyer: {
+                        email: "test@test.com",
+                        phone: "123123123",
+                        firstName: "Krzysztof",
+                        lastName: "Kononowicz"
+                    }
+                }
+            )
+        }).then(res => res.json())
+            .then(json => {
+                window.location.href = json.redirectUrl;
+            })
+
+    }
+
+</script>
+
+</html>

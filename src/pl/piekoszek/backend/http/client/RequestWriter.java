@@ -21,11 +21,29 @@ class RequestWriter {
         return byteBuffer.getAllBytes();
     }
 
+    public static byte[] requestBytesRawText(String method, String path, Map<String, String> headers, String rawText, String host, int port) {
+        byte[] bodyBytes = rawText.getBytes();
+        headers.put("Content-Length", bodyBytes.length + "");
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+        ByteBuffer byteBuffer = requestLineAndHeaders(method, path, headers, host, port);
+        byteBuffer.add(bodyBytes);
+        return byteBuffer.getAllBytes();
+    }
+
     private static ByteBuffer requestLineAndHeaders(String method, String path, Map<String, String> headers, String host, int port) {
         ByteBuffer byteBuffer = new ByteBuffer();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
         byteBuffer.add(method + " " + path + " HTTP/1.1").add(CLRF);
+
+        host = host.replace("https://", "");
+        host = host.replace("http://", "");
+
         headers.put("Host", host + ":" + port);
-        headers.put("Content-Type", "application/json");
+        if (!headers.containsKey("Content-Type")) {
+            headers.put("Content-Type", "application/json");
+        }
         headers.forEach((k, v) -> byteBuffer.add(k + ": " + v).add(CLRF));
         byteBuffer.add(CLRF);
         return byteBuffer;

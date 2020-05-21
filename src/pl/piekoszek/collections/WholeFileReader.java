@@ -20,17 +20,19 @@ public class WholeFileReader {
     }
 
     public byte[] read() {
+        byte[] buffer = new byte[10000];
         for (; ; ) {
-            int value = 0;
+            int value;
             try {
-                value = fileInputStream.read();
+                value = fileInputStream.read(buffer);
             } catch (IOException e) {
                 throw new FileReadException(e);
             }
             if (value == -1) {
                 break;
             }
-            byteBuffer.add((byte) value);
+
+            byteBuffer.add(buffer, value);
         }
         return byteBuffer.getAllBytes();
     }

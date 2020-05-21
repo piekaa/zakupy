@@ -1,6 +1,8 @@
 package pl.piekoszek.collections;
 
 
+import java.io.InputStream;
+
 public class ByteBuffer {
 
     private byte[] bytes;
@@ -19,8 +21,15 @@ public class ByteBuffer {
     }
 
     public ByteBuffer add(byte[] newBytes) {
-        for (int i = 0; i < newBytes.length; i++) {
-            add(newBytes[i]);
+        return add(newBytes, newBytes.length);
+    }
+
+    public ByteBuffer add(byte[] newBytes, int length) {
+        while (bytes.length < nextPos + newBytes.length) {
+            realloc();
+        }
+        for (int i = 0; i < length; i++) {
+            bytes[nextPos++] = newBytes[i];
         }
         return this;
     }
@@ -66,6 +75,20 @@ public class ByteBuffer {
         return addLittleEndian(strBytes.length + 1).add(string.getBytes()).add((byte) 0);
     }
 
+    public ByteBuffer readOneByte(InputStream inputStream) {
+        try {
+            int value;
+            value = inputStream.read();
+            if (value == -1) {
+                throw new ByteBufferException("Unexpected end of stream");
+            }
+            add((byte) value);
+        } catch (Exception e) {
+            throw new ByteBufferException(e);
+        }
+        return this;
+    }
+
     public boolean endsWith1310() {
         if (nextPos < 2) {
             return false;
@@ -78,6 +101,10 @@ public class ByteBuffer {
             return false;
         }
         return bytes[nextPos - 4] == 13 && bytes[nextPos - 3] == 10 && bytes[nextPos - 2] == 13 && bytes[nextPos - 1] == 10;
+    }
+
+    public byte last() {
+        return bytes[nextPos - 1];
     }
 
     public byte[] getAllBytes() {

@@ -33,6 +33,15 @@ public class Mongo {
         }
     }
 
+    public void update(String db, String collection, String query, String insertQuery) {
+        MongoUpdate mongoUpdate = new MongoUpdate(requestId++, db, collection, query, insertQuery);
+        try {
+            connection.outputStream.write(mongoUpdate.bytes);
+        } catch (IOException e) {
+            throw new MongoException(e);
+        }
+    }
+
     private MongoResponse executeQuery(String jsonQuery, String db, String collection) {
         MongoQuery mongoQuery = new MongoQuery(requestId++, jsonQuery, db, collection);
         try {

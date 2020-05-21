@@ -3,21 +3,23 @@ package pl.piekoszek.mongo;
 import pl.piekoszek.collections.ByteBuffer;
 import pl.piekoszek.json.Piekson;
 
-class MongoInsert {
+class MongoUpdate {
 
     byte[] bytes;
 
-    MongoInsert(int requestId, String db, String collection, Object toInsert) {
+    MongoUpdate(int requestId, String db, String collection, String query, String updateQuery) {
         MongoHeader mongoHeader = new MongoHeader();
         mongoHeader.requestId = requestId;
-        mongoHeader.opCode = 2002;
+        mongoHeader.opCode = 2001;
 
         ByteBuffer buffer = new ByteBuffer();
 
-        buffer.addLittleEndian(0); //flags
+        buffer.addLittleEndian(0);
         buffer.addCString(db + "." + collection);
+        buffer.addLittleEndian(0); //flags
 
-        buffer.add(Piekson.toBson(toInsert));
+        buffer.add(Piekson.jsonToBson(query));
+        buffer.add(Piekson.jsonToBson(updateQuery));
 
         byte[] bufferBytes = buffer.getAllBytes();
         mongoHeader.messageLength = bufferBytes.length + 16;

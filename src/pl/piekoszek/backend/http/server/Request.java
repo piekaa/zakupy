@@ -21,6 +21,7 @@ public class Request {
         String[] requestLineSplit = requestLine.split(" ");
         method = requestLineSplit[0];
         path = requestLineSplit[1];
+        body = new byte[0];
     }
 
     public Map<String, String> getHeaders() {

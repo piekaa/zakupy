@@ -9,4 +9,9 @@ public class ResponseInfo {
         this.responseBody = responseBody;
         this.responseStatus = responseStatus;
     }
+
+    public ResponseInfo(ResponseStatus responseStatus) {
+        this.responseStatus = responseStatus;
+        responseBody = new Object();
+    }
 }

@@ -38,22 +38,25 @@ public class HttpRequestSender {
         return sendRequestReadResponse(requestBytes, responseType);
     }
 
-    public HttpResponse<Map<String,Object>> post(String path, Map<String, String> headers, Object requestBody) {
+    public HttpResponse<Map<String, Object>> post(String path, Map<String, String> headers, Object requestBody) {
         byte[] requestBytes = RequestWriter.requestBytes("POST", path, headers, requestBody, host, port);
         return sendRequestReadResponse(requestBytes);
     }
 
-    public HttpResponse<Map<String,Object>> post(String path, Object requestBody) {
+    public HttpResponse<Map<String, Object>> post(String path, Object requestBody) {
         byte[] requestBytes = RequestWriter.requestBytes("POST", path, new HashMap<>(), requestBody, host, port);
         return sendRequestReadResponse(requestBytes);
+    }
+
+    public <T> HttpResponse<T> postRawText(String path, String text, Class<T> responseType) {
+        byte[] requestBytes = RequestWriter.requestBytesRawText("POST", path, new HashMap<>(), text, host, port);
+        return sendRequestReadResponse(requestBytes, responseType);
     }
 
     private <T> HttpResponse<T> sendRequestReadResponse(byte[] requestBytes, Class<T> responseType) {
         try {
             connection.outputStream.write(requestBytes);
-            HttpResponse<T> response = ResponseReader.read(connection.inputStream, responseType);
-            response.failed = false;
-            return response;
+            return ResponseReader.read(connection.inputStream, responseType);
         } catch (IOException e) {
             try {
                 connection = new TcpClient(host, port).connection();
@@ -74,9 +77,7 @@ public class HttpRequestSender {
     private <T> HttpResponse<T> sendRequestReadResponse(byte[] requestBytes) {
         try {
             connection.outputStream.write(requestBytes);
-            HttpResponse<T> response = ResponseReader.read(connection.inputStream);
-            response.failed = false;
-            return response;
+            return ResponseReader.read(connection.inputStream);
         } catch (IOException e) {
             try {
                 connection = new TcpClient(host, port).connection();
