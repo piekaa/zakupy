@@ -26,8 +26,8 @@ public class Main {
 //        httpServer.register(new EndpointInfo("POST", "/priviet", ((requestInfo, body) -> "siemaneczko " + requestInfo.getRequest().bodyText()), Object.class));
 //        httpServer.register(new EndpointInfo("POST", "/priviet2", ((requestInfo, body) -> "siemaneczko " + body), String.class));
 
-//        httpServer.register(new EndpointInfo("GET", "/kochane/:dzieci/pocalujcie/:misia/w/:dupe", (info, body) ->
-//                info.getPathParams().get("dzieci") + " - " + info.getPathParams().get("misia") + " - " + info.getPathParams().get("dupe"), Object.class));
+//        httpServer.register(new EndpointInfo("GET", "/path/:variables/test/:Eine/kleine/:Nachtmusik", (info, body) ->
+//                info.getPathParams().get("variables") + " - " + info.getPathParams().get("Eine") + " - " + info.getPathParams().get("Nachtmusik"), Object.class));
 
         new TcpServer(httpServer, 2106);
     }

@@ -15,6 +15,7 @@ public class TcpServer {
     public TcpServer(ConnectionHandler connectionHandler, int port) throws IOException {
         this.connectionHandler = connectionHandler;
         serverSocket = new ServerSocket(port);
+        System.out.println("Server is listening on port: " + port);
         for (; ; ) {
             Socket socket = serverSocket.accept();
             Connection connection = new Connection(socket.getInputStream(), socket.getOutputStream());

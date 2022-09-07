@@ -2,6 +2,7 @@ package pl.piekoszek.backend.http.server;
 
 import pl.piekoszek.backend.tcp.Connection;
 import pl.piekoszek.json.Piekson;
+import pl.piekoszek.json.PieksonException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,10 +62,14 @@ class Endpoints {
 
         Object requestBody = new Object();
         if (request.body.length > 0) {
-            if (endpointInfo.getRequestBodyClass() == Map.class) {
-                requestBody = Piekson.fromJson(request.bodyText());
-            } else {
-                requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+            try {
+                if (endpointInfo.getRequestBodyClass() == Map.class) {
+                    requestBody = Piekson.fromJson(request.bodyText());
+                } else {
+                    requestBody = Piekson.fromJson(request.bodyText(), endpointInfo.getRequestBodyClass());
+                }
+            } catch (Exception exception) {
+                throw new PieksonException(exception);
             }
         }
         Object result;
@@ -80,19 +85,23 @@ class Endpoints {
         ResponseStatus responseStatus = ResponseStatus.OK;
 
         String responseBodyString = "";
+        ResponseInfo responseInfo = null;
         if (result != null) {
             Object body = result;
             if (result instanceof ResponseInfo) {
-                ResponseInfo responseInfo = (ResponseInfo) result;
-                responseStatus = responseInfo.responseStatus;
-                if (responseInfo.responseBody != null) {
-                    body = responseInfo.responseBody;
-                }
+                responseInfo = (ResponseInfo) result;
+                responseStatus = responseInfo.status;
+                body = responseInfo.body;
             }
             responseBodyString = Piekson.toJson(body);
         }
 
         Response response = new Response(responseStatus, responseBodyString);
+        if (responseInfo != null) {
+            for (Map.Entry<String, String> entry : responseInfo.headers.entrySet()) {
+                response.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
         response.addHeader("Content-Type", "application/json");
 
         ResponseWriter.write(connection.outputStream, response);

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+</head>
+<body>
+
+<input id="a"/>
++
+<input id="b"/>
+
+<button id="calculate">=</button>
+
+<input id="sum" disabled>
+
+
+</body>
+
+<script type="module">
+
+    document.getElementById("calculate").onclick = () => {
+        fetch("/calc/add", {
+            method: "POST",
+            body: JSON.stringify({
+                a: parseInt(document.getElementById("a").value || "0"),
+                b: parseInt(document.getElementById("b").value || "0")
+            })
+        })
+            .then(res => res.json())
+            .then(json => {
+                document.getElementById("sum").value = json.result;
+            });
+    }
+
+
+</script>
+
+</html>

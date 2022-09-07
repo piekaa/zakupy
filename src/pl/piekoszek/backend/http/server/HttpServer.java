@@ -3,6 +3,7 @@ package pl.piekoszek.backend.http.server;
 import pl.piekoszek.backend.tcp.Connection;
 import pl.piekoszek.backend.tcp.ConnectionHandler;
 import pl.piekoszek.collections.WholeFileReader;
+import pl.piekoszek.json.PieksonException;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -34,9 +35,13 @@ public class HttpServer implements ConnectionHandler {
                     if (endpoints.handleMessageIfRegistered(request, connection)) {
                         continue;
                     }
+                } catch (PieksonException e) {
+                    ResponseWriter.write(connection.outputStream, new Response(ResponseStatus.BAD_REQUEST, e.getMessage()));
+                    continue;
                 } catch (Exception e) {
                     e.printStackTrace();
                     ResponseWriter.write(connection.outputStream, new Response(ResponseStatus.INTERNAL_SERVER_ERROR, "Coś nie pykło..."));
+                    continue;
                 }
                 if (!request.method.equals("GET")) {
                     ResponseWriter.write(connection.outputStream, new Response(ResponseStatus.NOT_FOUND, "Not found"));
@@ -48,7 +53,7 @@ public class HttpServer implements ConnectionHandler {
                 }
                 String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
 
-                if( filePath.contains("?")) {
+                if (filePath.contains("?")) {
                     filePath = filePath.substring(0, filePath.indexOf("?"));
                 }
 

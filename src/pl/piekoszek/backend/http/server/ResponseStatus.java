@@ -4,6 +4,7 @@ public enum ResponseStatus {
 
     OK(200, "dla mnie się podoba"),
     CREATED(201, "nu tak i ja stworzył"),
+    BAD_REQUEST(400, "Źle pan wypełnił"),
     NOT_FOUND(404, "takiego czegoś na pewno nigdy nie było"),
     INTERNAL_SERVER_ERROR(500, "coś, coś się popsuło i nie było mnie słychać");
 
