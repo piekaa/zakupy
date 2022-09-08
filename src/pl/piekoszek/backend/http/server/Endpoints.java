@@ -72,11 +72,17 @@ class Endpoints {
                 throw new PieksonException(exception);
             }
         }
-        Object result;
+        Object result = null;
         try {
-            Method method = endpointInfo.getMessageHandler().getClass().getMethods()[0];
-            method.setAccessible(true);
-            result = method.invoke(endpointInfo.getMessageHandler(), requestInfo, requestBody);
+            for (MessageHandler<?> preMessageHandler : endpointInfo.getPreMessageHandlers()) {
+                result = setAccessibleAndInvoke(preMessageHandler, requestInfo, requestBody);
+                if( result != null) {
+                    break;
+                }
+            }
+            if (result == null) {
+                result = setAccessibleAndInvoke(endpointInfo.getMessageHandler(), requestInfo, requestBody);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return false;
@@ -107,5 +113,11 @@ class Endpoints {
         ResponseWriter.write(connection.outputStream, response);
 
         return true;
+    }
+
+    private Object setAccessibleAndInvoke(MessageHandler messageHandler, RequestInfo requestInfo, Object requestBody) throws InvocationTargetException, IllegalAccessException {
+        Method method = messageHandler.getClass().getMethods()[0];
+        method.setAccessible(true);
+        return method.invoke(messageHandler, requestInfo, requestBody);
     }
 }

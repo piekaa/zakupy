@@ -10,16 +10,28 @@
 +
 <input id="b"/>
 
-<button id="calculate">=</button>
+<button id="add">=</button>
 
 <input id="sum" disabled>
+
+<br/>
+
+<input id="ma"/>
+*
+<input id="mb"/>
+
+<button id="multiply">=</button>
+
+<input id="mSum" disabled>
+
+<br/>
 
 
 </body>
 
 <script type="module">
 
-    document.getElementById("calculate").onclick = () => {
+    document.getElementById("add").onclick = () => {
         fetch("/calc/add", {
             method: "POST",
             body: JSON.stringify({
@@ -30,6 +42,20 @@
             .then(res => res.json())
             .then(json => {
                 document.getElementById("sum").value = json.result;
+            });
+    }
+
+    document.getElementById("multiply").onclick = () => {
+        fetch("/calc/multiply", {
+            method: "POST",
+            body: JSON.stringify({
+                a: parseInt(document.getElementById("ma").value || "0"),
+                b: parseInt(document.getElementById("mb").value || "0")
+            })
+        })
+            .then(res => res.json())
+            .then(json => {
+                document.getElementById("mSum").value = json.result;
             });
     }
 
