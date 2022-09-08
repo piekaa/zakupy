@@ -4,8 +4,9 @@ public enum ResponseStatus {
 
     OK(200, "dla mnie się podoba"),
     CREATED(201, "nu tak i ja stworzył"),
-    BAD_REQUEST(400, "Źle pan wypełnił"),
-    UNAUTHORIZED(401, "Ja pana nie znam, panie Ferdku"), // Świat według kiepskich - Krawczyk
+    BAD_REQUEST(400, "źle pan wypełnił"),
+    UNAUTHORIZED(401, "ja pana nie znam, panie Ferdku"), // Świat według kiepskich - Krawczyk
+    FORBIDDEN(403, "pan tu nie stał"),
     NOT_FOUND(404, "takiego czegoś na pewno nigdy nie było"),
     INTERNAL_SERVER_ERROR(500, "coś, coś się popsuło i nie było mnie słychać");
 
