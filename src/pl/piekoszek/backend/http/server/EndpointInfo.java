@@ -23,6 +23,10 @@ public class EndpointInfo {
         preMessageHandlers.add(preMessageHandler);
     }
 
+    public EndpointInfo(String method, String path, MessageHandler<?> messageHandler) {
+        this(method, path, messageHandler, new ArrayList<>(), Object.class);
+    }
+
     public EndpointInfo(String method, String path, MessageHandler<?> messageHandler, Class<?> requestBodyClass) {
         this(method, path, messageHandler, new ArrayList<>(), requestBodyClass);
     }

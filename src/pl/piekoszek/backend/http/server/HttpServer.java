@@ -48,7 +48,7 @@ public class HttpServer implements ConnectionHandler {
                     continue;
                 }
                 if (staticPath == null) {
-                    ResponseWriter.write(connection.outputStream, new Response(ResponseStatus.OK, "Hello world 2!"));
+                    ResponseWriter.write(connection.outputStream, new Response(ResponseStatus.NOT_FOUND, "Not found"));
                     continue;
                 }
                 String filePath = request.path.replaceAll("/", Matcher.quoteReplacement(File.separator));
