@@ -60,7 +60,7 @@ class ShopController implements EndpointsProvider {
 
         PayuOrderResponse payuOrderResponse = payuService.placeOrder(products, payuBuyer,
                 "https://gs.piekoszek.pl/gs/orderStatus",
-                "https://gs.piekoszek.pl/kupiono.html?id=" + gsId,
+                "http://localhost:2106/kupiono.html?id=" + gsId,
                 gsId
         );
 

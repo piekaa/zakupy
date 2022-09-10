@@ -41,6 +41,10 @@ class RequestWriter {
         host = host.replace("http://", "");
 
         headers.put("Host", host + ":" + port);
+        if (port == 80 || port == 443) {
+            headers.put("Host", host);
+        }
+
         if (!headers.containsKey("Content-Type")) {
             headers.put("Content-Type", "application/json");
         }

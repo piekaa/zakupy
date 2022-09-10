@@ -15,11 +15,9 @@ public class TcpClient {
     public TcpClient(String host, int port) throws IOException {
         if (host.startsWith("https://")) {
             URL url = new URL(host);
-            Security.addProvider(
-                    new com.sun.net.ssl.internal.ssl.Provider());
             SSLSocketFactory factory =
                     (SSLSocketFactory) SSLSocketFactory.getDefault();
-            socket = factory.createSocket(url.getHost(), 443);
+            socket = factory.createSocket(url.getHost(), port);
 
         } else {
             socket = new Socket(host, port);

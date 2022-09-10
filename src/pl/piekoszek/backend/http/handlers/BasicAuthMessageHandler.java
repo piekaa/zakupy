@@ -1,9 +1,10 @@
 package pl.piekoszek.backend.http.handlers;
 
 import pl.piekoszek.backend.http.server.*;
-import sun.misc.BASE64Encoder;
+
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class BasicAuthMessageHandler implements MessageHandler<Object> {
     private final String basicAuthString;
 
     public BasicAuthMessageHandler(String username, String password) {
-        basicAuthString = "Basic " + new BASE64Encoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+        basicAuthString = "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override

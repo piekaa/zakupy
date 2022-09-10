@@ -41,6 +41,12 @@ class PayuServiceImpl implements PayuService {
             HttpResponse<PayuAuthResponse> payuAuthResponseHttpResponse = httpRequestSender.postRawText("pl/standard/user/oauth/authorize",
                     "grant_type=client_credentials&client_id=386112&client_secret=272fc5277e07b27682e83da8ccd4e9b8",
                     PayuAuthResponse.class);
+            if (!payuAuthResponseHttpResponse.successfulStatus) {
+                throw new IllegalStateException("Request failed with status: "
+                                                + payuAuthResponseHttpResponse.statusCode + " "
+                                                + payuAuthResponseHttpResponse.statusText + ", body: "
+                                                + payuAuthResponseHttpResponse.bodyMap.get("_raw_body_text"));
+            }
             tokenExpireTime = now + payuAuthResponseHttpResponse.body.expires_in;
             accessToken = payuAuthResponseHttpResponse.body.access_token;
         }

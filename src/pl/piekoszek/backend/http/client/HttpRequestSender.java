@@ -23,6 +23,10 @@ public class HttpRequestSender {
         }
     }
 
+    public HttpResponse<Object> get(String path) {
+        return get(path, new HashMap<>(), Object.class);
+    }
+
     public <T> HttpResponse<T> get(String path, Map<String, String> headers, Class<T> responseType) {
         byte[] requestBytes = RequestWriter.requestBytes("GET", path, headers, host, port);
         return sendRequestReadResponse(requestBytes, responseType);
