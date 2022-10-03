@@ -358,6 +358,7 @@ public class Piekson {
 
         try {
             for (Field field : fields) {
+                field.setAccessible(true);
                 Object value = field.get(object);
                 encodeObjectValueAndAppend(result, field.getName(), value);
             }
@@ -430,6 +431,8 @@ public class Piekson {
                 bson.add(kv.getKey(), (Long) kv.getValue());
             } else if (kv.getValue() instanceof Double) {
                 bson.add(kv.getKey(), (Double) kv.getValue());
+            } else if (kv.getValue() instanceof Boolean) {
+                bson.add(kv.getKey(), (Boolean) kv.getValue());
             } else if (kv.getValue() instanceof String) {
                 bson.add(kv.getKey(), (String) kv.getValue());
             } else if (kv.getValue() instanceof Map) {
@@ -457,6 +460,8 @@ public class Piekson {
                     bson.add(name, (Long) value);
                 } else if (value instanceof Double) {
                     bson.add(name, (Double) value);
+                } else if (value instanceof Boolean) {
+                    bson.add(name, (Boolean) value);
                 } else if (value instanceof String) {
                     bson.add(name, (String) value);
                 } else if (value instanceof Map) {
@@ -526,6 +531,8 @@ public class Piekson {
                 result.put(byteReader.readCString(), byteReader.readLong());
             } else if (elementType == Bson.DOUBLE) {
                 result.put(byteReader.readCString(), byteReader.readDouble());
+            } else if (elementType == Bson.BOOLEAN) {
+                result.put(byteReader.readCString(), byteReader.readBoolean());
             } else if (elementType == Bson.STRING) {
                 result.put(byteReader.readCString(), byteReader.readString());
             } else if (elementType == Bson.OBJECT) {
@@ -558,6 +565,10 @@ public class Piekson {
             if (elementType == Bson.DOUBLE) {
                 byteReader.readCString();
                 result.add(byteReader.readDouble());
+            }
+            if (elementType == Bson.BOOLEAN) {
+                byteReader.readCString();
+                result.add(byteReader.readBoolean());
             }
             if (elementType == Bson.STRING) {
                 byteReader.readCString();

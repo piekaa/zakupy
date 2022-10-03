@@ -47,6 +47,10 @@ public class ByteBuffer {
         });
     }
 
+    public ByteBuffer addByte(byte value) {
+        return add(new byte[]{value});
+    }
+
     public ByteBuffer addLittleEndian(long value) {
         return add(new byte[]{
                 (byte) (value & 0xff),

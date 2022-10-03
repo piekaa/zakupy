@@ -55,6 +55,10 @@ public class ByteReader {
         return Double.longBitsToDouble(readLong());
     }
 
+    public boolean readBoolean() {
+        return readByte() == 1;
+    }
+
     public String readCString() {
         ByteBuffer byteBuffer = new ByteBuffer();
         for (; ; ) {

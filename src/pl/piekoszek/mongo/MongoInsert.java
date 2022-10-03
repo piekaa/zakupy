@@ -17,7 +17,7 @@ class MongoInsert {
         buffer.addLittleEndian(0); //flags
         buffer.addCString(db + "." + collection);
 
-        buffer.add(Piekson.toBson(toInsert));
+        buffer.add(Piekson.jsonToBson(Piekson.toJson(toInsert)));
 
         byte[] bufferBytes = buffer.getAllBytes();
         mongoHeader.messageLength = bufferBytes.length + 16;

@@ -88,6 +88,8 @@ public class HttpServer implements ConnectionHandler {
         Response response = new Response(ResponseStatus.OK, reader.read());
         if (file.getPath().endsWith(".svg")) {
             response.headers.put("Content-Type", "image/svg+xml");
+        } else if (file.getPath().endsWith(".js")) {
+            response.headers.put("Content-Type", "text/javascript");
         }
         ResponseWriter.write(connection.outputStream, response);
     }

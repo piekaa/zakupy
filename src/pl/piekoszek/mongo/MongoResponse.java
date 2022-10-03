@@ -41,7 +41,7 @@ class MongoResponse {
             }
 
             ByteReader byteReader = new ByteReader(responseBuffer.getAllBytes());
-            new MongoHeader(byteReader);
+            var header = new MongoHeader(byteReader);
             responseFlags = byteReader.readInt();
             cursorId = byteReader.readLong();
             cursorStartingPoint = byteReader.readInt();

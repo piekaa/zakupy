@@ -11,6 +11,7 @@ class Bson {
     static final byte DOUBLE = 0x01;
     static final byte STRING = 0x02;
     static final byte OBJECT = 0x03;
+    static final byte BOOLEAN = 0x08;
     static final byte OBJECT_END = 0x00;
     static final byte ARRAY = 0x04;
     static final byte NULL = 0x0A;
@@ -54,6 +55,11 @@ class Bson {
 
     Bson add(String name, String value) {
         byteBuffer.add(STRING).addCString(name).addLengthAndString(value);
+        return this;
+    }
+
+    Bson add(String name, boolean value) {
+        byteBuffer.add(BOOLEAN).addCString(name).addByte((byte) (value ? 1 : 0));
         return this;
     }
 
