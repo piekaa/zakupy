@@ -16,7 +16,7 @@ public class Main {
 
         HttpServer httpServer = new HttpServer("static");
 
-        Mongo mongo = new Mongo(new TcpClient("localhost", 27017).connection(), "shopping");
+        Mongo mongo = new Mongo(new TcpClient("localhost", 27017).connection(), "zakupy");
         httpServer.register(CategoryConfig.controller(mongo).endpoints());
         httpServer.register(ItemConfig.controller(mongo).endpoints());
         httpServer.register(CartConfig.controller(mongo).endpoints());

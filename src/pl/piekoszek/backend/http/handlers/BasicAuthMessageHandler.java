@@ -13,7 +13,7 @@ public class BasicAuthMessageHandler implements MessageHandler<Object> {
     private final String basicAuthString;
 
     public BasicAuthMessageHandler(String username, String password) {
-        basicAuthString = "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
+        basicAuthString = "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
     }
 
     @Override

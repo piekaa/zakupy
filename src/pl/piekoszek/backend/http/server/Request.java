@@ -1,5 +1,6 @@
 package pl.piekoszek.backend.http.server;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class Request {
@@ -41,6 +42,6 @@ public class Request {
     }
 
     public String bodyText() {
-        return new String(body);
+        return new String(body, StandardCharsets.UTF_8);
     }
 }

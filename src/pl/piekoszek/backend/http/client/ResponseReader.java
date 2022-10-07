@@ -3,6 +3,7 @@ package pl.piekoszek.backend.http.client;
 import pl.piekoszek.collections.ByteBuffer;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ class ResponseReader {
                     break;
                 }
             }
-            statusLine = new String(byteBuffer.getAllBytes());
+            statusLine = new String(byteBuffer.getAllBytes(), StandardCharsets.UTF_8);
             byteBuffer = new ByteBuffer();
             for (; ; ) {
                 byteBuffer.readOneByte(inputStream);
@@ -36,7 +37,7 @@ class ResponseReader {
                     break;
                 }
             }
-            headersText = new String(byteBuffer.getAllBytes());
+            headersText = new String(byteBuffer.getAllBytes(), StandardCharsets.UTF_8);
             Map<String, String> headers = new HashMap<>();
             String[] splitedHeaders = headersText.split(new String(new byte[]{13, 10}));
             for (String header : splitedHeaders) {
@@ -115,7 +116,7 @@ class ResponseReader {
             byteBuffer.readOneByte(inputStream);
         }
         byte[] bytes = byteBuffer.getAllBytes();
-        String line = new String(bytes, 0, bytes.length - 2);
+        String line = new String(bytes, 0, bytes.length - 2, StandardCharsets.UTF_8);
         String hex;
         hex = line.contains(";") ? line.split(";", 2)[0] : line;
         return Integer.parseInt(hex, 16);

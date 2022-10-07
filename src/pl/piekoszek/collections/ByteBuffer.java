@@ -2,6 +2,7 @@ package pl.piekoszek.collections;
 
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class ByteBuffer {
 
@@ -35,7 +36,7 @@ public class ByteBuffer {
     }
 
     public ByteBuffer add(String string) {
-        return add(string.getBytes());
+        return add(string.getBytes(StandardCharsets.UTF_8));
     }
 
     public ByteBuffer addLittleEndian(int value) {
@@ -71,7 +72,7 @@ public class ByteBuffer {
 
 
     public ByteBuffer addCString(String string) {
-        return add(string.getBytes()).add((byte) 0);
+        return add(string.getBytes(StandardCharsets.UTF_8)).add((byte) 0);
     }
 
     public ByteBuffer addLengthAndString(String string) {

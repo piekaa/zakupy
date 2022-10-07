@@ -3,6 +3,7 @@ package pl.piekoszek.backend.http.client;
 import pl.piekoszek.collections.ByteBuffer;
 import pl.piekoszek.json.Piekson;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 class RequestWriter {
@@ -14,7 +15,7 @@ class RequestWriter {
     }
 
     public static byte[] requestBytes(String method, String path, Map<String, String> headers, Object body, String host, int port) {
-        byte[] bodyJsonBytes = Piekson.toJson(body).getBytes();
+        byte[] bodyJsonBytes = Piekson.toJson(body).getBytes(StandardCharsets.UTF_8);
         headers.put("Content-Length", bodyJsonBytes.length + "");
         ByteBuffer byteBuffer = requestLineAndHeaders(method, path, headers, host, port);
         byteBuffer.add(bodyJsonBytes);
@@ -22,7 +23,7 @@ class RequestWriter {
     }
 
     public static byte[] requestBytesRawText(String method, String path, Map<String, String> headers, String rawText, String host, int port) {
-        byte[] bodyBytes = rawText.getBytes();
+        byte[] bodyBytes = rawText.getBytes(StandardCharsets.UTF_8);
         headers.put("Content-Length", bodyBytes.length + "");
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         ByteBuffer byteBuffer = requestLineAndHeaders(method, path, headers, host, port);

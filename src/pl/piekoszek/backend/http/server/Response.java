@@ -1,5 +1,6 @@
 package pl.piekoszek.backend.http.server;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class Response {
 
     public Response(ResponseStatus responseStatus, String responseBody) {
         this.responseStatus = responseStatus;
-        responseBytes = responseBody.getBytes();
+        responseBytes = responseBody.getBytes(StandardCharsets.UTF_8);
     }
 
     public Response(ResponseStatus responseStatus, byte[] responseBody) {

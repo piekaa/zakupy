@@ -4,6 +4,7 @@ import pl.piekoszek.collections.ByteBuffer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 class ResponseWriter {
@@ -22,7 +23,7 @@ class ResponseWriter {
         headers.append("Content-Length: ").append(body.length).append(CRLF);
         headers.append(CRLF);
         ByteBuffer byteBuffer = new ByteBuffer();
-        byteBuffer.add((responseLine + headers).getBytes());
+        byteBuffer.add((responseLine + headers).getBytes(StandardCharsets.UTF_8));
         byteBuffer.add(body);
 //        System.out.println(new String(byteBuffer.getAllBytes()));
         try {

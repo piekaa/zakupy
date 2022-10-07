@@ -1,6 +1,8 @@
 package pl.piekoszek.collections;
 
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Little endian
  */
@@ -68,7 +70,7 @@ public class ByteReader {
             }
             byteBuffer.add(b);
         }
-        return new String(byteBuffer.getAllBytes());
+        return new String(byteBuffer.getAllBytes(), StandardCharsets.UTF_8);
     }
 
     public String readString() {
@@ -79,7 +81,7 @@ public class ByteReader {
             byteBuffer.add(b);
         }
         cursor++;
-        return new String(byteBuffer.getAllBytes());
+        return new String(byteBuffer.getAllBytes(), StandardCharsets.UTF_8);
     }
 
     public boolean end() {

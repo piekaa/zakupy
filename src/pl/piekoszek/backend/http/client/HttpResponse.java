@@ -3,6 +3,7 @@ package pl.piekoszek.backend.http.client;
 import pl.piekoszek.json.Piekson;
 import pl.piekoszek.json.PieksonException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +29,12 @@ public class HttpResponse<T> {
     HttpResponse(String statusLine, Map<String, String> headers, byte[] body, Class<T> type) {
         this(statusLine, headers);
         try {
-            this.body = Piekson.fromJson(new String(body), type);
+            this.body = Piekson.fromJson(new String(body, StandardCharsets.UTF_8), type);
         } catch (PieksonException exception) {
             Map<String, Object> errorBodyMap = new HashMap<>();
             errorBodyMap.put("_error", "Response body is not JSON");
             errorBodyMap.put("_error_message", exception.getMessage());
-            errorBodyMap.put("_raw_body_text", new String(body));
+            errorBodyMap.put("_raw_body_text", new String(body, StandardCharsets.UTF_8));
             errorBodyMap.put("_raw_body_bytes", body);
             this.bodyMap = errorBodyMap;
         }
@@ -42,12 +43,12 @@ public class HttpResponse<T> {
     HttpResponse(String statusLine, Map<String, String> headers, byte[] body) {
         this(statusLine, headers);
         try {
-            this.bodyMap = Piekson.fromJson(new String(body));
+            this.bodyMap = Piekson.fromJson(new String(body, StandardCharsets.UTF_8));
         } catch (PieksonException exception) {
             Map<String, Object> errorBodyMap = new HashMap<>();
             errorBodyMap.put("_error", "Response body is not JSON");
             errorBodyMap.put("_error_message", exception.getMessage());
-            errorBodyMap.put("_raw_body_text", new String(body));
+            errorBodyMap.put("_raw_body_text", new String(body, StandardCharsets.UTF_8));
             errorBodyMap.put("_raw_body_bytes", body);
             this.bodyMap = errorBodyMap;
         }
