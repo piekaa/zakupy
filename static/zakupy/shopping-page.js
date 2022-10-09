@@ -10,11 +10,6 @@ export default class ShoppingPage extends HTMLElement {
 
     constructor() {
         super();
-        fetch("/api/item")
-            .then(res => res.json())
-            .then(items => {
-                this.allItems = items;
-            });
     }
 
     connectedCallback() {
@@ -46,48 +41,51 @@ export default class ShoppingPage extends HTMLElement {
         const itemsDiv = document.createElement("div");
         itemsDiv.classList.add("items")
 
-        this.append(new Header("Zakupy"));
-        this.append(new ShoppingFilters(categories => {
-            this.currentCategories = categories;
-            itemsDiv.innerHTML = "";
-            console.log(categories);
-            this.allItems
-                .sort((a, b) => a.inCart - b.inCart)
-                .forEach(item => {
-                    if (categories.some(c => item.categories.map(ic => ic._id).includes(c))) {
-                        itemsDiv.append(new ShoppingItem(item))
-                    }
-                })
-        }));
 
-        this.append(itemsDiv);
-
-        const buyButton = document.createElement("button");
-        buyButton.innerText = "Zakończ zakupy";
-        buyButton.classList.add("buy-button");
-
-        buyButton.onclick = () => {
-            new YesNoPopup("Na pewno zakończyć zakupy?", () => {
-                fetch("/api/cart/finish",
-                    {
-                        method: "POST",
-                        body: JSON.stringify({
-                            categories: this.currentCategories
+        fetch("/api/item")
+            .then(res => res.json())
+            .then(items => {
+                this.allItems = items;
+                this.append(new Header("Zakupy"));
+                this.append(new ShoppingFilters(categories => {
+                    this.currentCategories = categories;
+                    itemsDiv.innerHTML = "";
+                    console.log(categories);
+                    this.allItems
+                        .sort((a, b) => a.inCart - b.inCart)
+                        .forEach(item => {
+                            if (categories.some(c => item.categories.map(ic => ic._id).includes(c))) {
+                                itemsDiv.append(new ShoppingItem(item))
+                            }
                         })
-                    })
-                    .then(res => {
-                        if (res.ok) {
-                            window.location.reload();
-                        } else {
-                            console.trace(res.status)
-                        }
-                    })
+                }));
+
+                this.append(itemsDiv);
+
+                const buyButton = document.createElement("button");
+                buyButton.innerText = "Zakończ zakupy";
+                buyButton.classList.add("buy-button");
+
+                buyButton.onclick = () => {
+                    new YesNoPopup("Na pewno zakończyć zakupy?", () => {
+                        fetch("/api/cart/finish",
+                            {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    categories: this.currentCategories
+                                })
+                            })
+                            .then(res => {
+                                if (res.ok) {
+                                    window.location.reload();
+                                } else {
+                                    console.trace(res.status)
+                                }
+                            })
+                    });
+                }
+                this.append(buyButton);
             });
-        }
-
-        this.append(buyButton);
-
-
     }
 
 }

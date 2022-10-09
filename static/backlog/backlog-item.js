@@ -21,6 +21,7 @@ export default class BacklogItem extends HTMLElement {
                 display: flex;
                 gap: 16px;
                 justify-content: space-between;
+                align-items: center;
             }
             
             .backlog-item-content {
@@ -29,6 +30,7 @@ export default class BacklogItem extends HTMLElement {
                 gap: 10px;
                 font-size: 1.3em;
                 align-items: center;
+                flex-wrap: wrap;
             }
             
         </style>

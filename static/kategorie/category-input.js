@@ -13,19 +13,24 @@ export default class CategoryInput extends HTMLElement {
             piekoszek-category-input {
                 margin-top: 16px;
                 display: flex;
-                gap: 16px;
+                gap: 4px;
             }
             
             piekoszek-category-input input {
-                flex: 5;
+                width: 55%;
                 font-size: 1.3em;
             }
             
             piekoszek-category-input input[type="color" i] {
-                flex: 1;
+                width: 15%;
                 height: auto;
                 background: white;
             }
+            
+            piekoszek-category-input button {
+                width: 20%;
+            } 
+            
         </style>
         `;
 

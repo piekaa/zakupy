@@ -19,6 +19,7 @@ export default class BacklogInput extends HTMLElement {
             piekoszek-backlog-input input {
                 flex: 1;
                 font-size: 1.3em;
+                max-width: 65%;
             }
         </style>
         `;

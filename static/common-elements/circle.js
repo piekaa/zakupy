@@ -15,6 +15,7 @@ export default class Circle extends HTMLElement {
             piekoszek-circle {
                 display: block;
                 border-radius: 50%;
+                aspect-ratio: 1;
             }
         </style>
         `;

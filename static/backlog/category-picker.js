@@ -18,12 +18,12 @@ export default class CategoryPicker extends HTMLElement {
         this.innerHTML = `
         <style> 
             body {
-                position: absolute;
+                position: fixed;
             }
             
             piekoszek-category-picker {
                 position:absolute;
-                margin: -8px;
+                margin-left: -8px;
                 top: 0;
                 width: 100vw;
                 height: 100vh;
