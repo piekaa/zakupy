@@ -23,11 +23,23 @@ public class Mongo {
         return executeQuery(jsonQuery, db, collection).getAll();
     }
 
-    public synchronized  <T> List<T> queryAll(String collection, String jsonQuery, Class<T> type) {
+    public synchronized <T> List<T> queryAll(String collection, String jsonQuery, Class<T> type) {
         return executeQuery(jsonQuery, db, collection).getAll(type);
     }
 
-    public synchronized  <T> T getById(String id, String collection, Class<T> type) {
+    /**
+     *
+     * @param id
+     * @param collection
+     * @param type
+     * @return Item or null
+     * @param <T>
+     */
+    public synchronized <T> T getById(String id, String collection, Class<T> type) {
+        var all = executeQuery(byIdString(id), db, collection).getAll(type);
+        if (all.size() == 0) {
+            return null;
+        }
         return executeQuery(byIdString(id), db, collection).getAll(type).get(0);
     }
 

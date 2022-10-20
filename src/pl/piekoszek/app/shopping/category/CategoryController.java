@@ -1,43 +1,42 @@
 package pl.piekoszek.app.shopping.category;
 
+import pl.piekoszek.app.shopping.auth.CollectionUtil;
 import pl.piekoszek.backend.http.server.*;
 import pl.piekoszek.mongo.Mongo;
 
 import java.util.UUID;
 
-import static pl.piekoszek.app.shopping.category.CategoryService.COLLECTION;
-
 class CategoryController implements EndpointsProvider {
 
-
+    static final String COLLECTION = "category";
 
     private Mongo mongo;
+    private BasicAuthMessageHandler basicAuthMessageHandler;
 
-    CategoryController(Mongo mongo) {
+    CategoryController(Mongo mongo, BasicAuthMessageHandler basicAuthMessageHandler) {
         this.mongo = mongo;
+        this.basicAuthMessageHandler = basicAuthMessageHandler;
     }
 
     private MessageHandler<Object> getAll = (info, body)
-            -> mongo.queryAll(COLLECTION, "{}", Category.class);
+            -> mongo.queryAll(CollectionUtil.collectionByUser(COLLECTION, info), "{}", Category.class);
 
     private MessageHandler<Category> add = (info, body) -> {
         body._id = UUID.randomUUID().toString();
-        mongo.insert(COLLECTION, body);
+        mongo.insert(CollectionUtil.collectionByUser(COLLECTION, info), body);
         return new ResponseInfo(body, ResponseStatus.CREATED);
     };
 
     private MessageHandler<Object> delete = (info, body) -> {
-        //todo fire event and remove category from item
-        mongo.deleteById(COLLECTION, info.getPathParams().get("id"));
+        mongo.deleteById(CollectionUtil.collectionByUser(COLLECTION, info), info.getPathParams().get("id"));
         return new ResponseInfo(ResponseStatus.OK);
     };
 
-    @Override
     public EndpointInfo[] endpoints() {
         return new EndpointInfo[]{
-                new EndpointInfo("GET", "/api/category", getAll, Object.class),
-                new EndpointInfo("POST", "/api/category", add, Category.class),
-                new EndpointInfo("DELETE", "/api/category/:id", delete, Object.class)
+                new EndpointInfo("GET", "/api/category", getAll, basicAuthMessageHandler, Object.class),
+                new EndpointInfo("POST", "/api/category", add, basicAuthMessageHandler, Category.class),
+                new EndpointInfo("DELETE", "/api/category/:id", delete, basicAuthMessageHandler, Object.class)
         };
     }
 }

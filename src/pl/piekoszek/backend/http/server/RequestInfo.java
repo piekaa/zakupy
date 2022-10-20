@@ -7,6 +7,7 @@ public class RequestInfo {
 
     Request request;
     Map<String, String> pathParams = new HashMap<>();
+    AuthInfo authInfo;
 
     public RequestInfo(Request request) {
         this.request = request;
@@ -18,5 +19,9 @@ public class RequestInfo {
 
     public Map<String, String> getPathParams() {
         return pathParams;
+    }
+
+    public AuthInfo getAuthInfo() {
+        return authInfo;
     }
 }

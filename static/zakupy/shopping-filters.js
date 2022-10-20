@@ -24,6 +24,7 @@ export default class ShoppingFilters extends HTMLElement {
             .filters {
                 display: flex;
                 gap: 16px;
+                flex-wrap: wrap;
             }
             
             .filters piekoszek-circle {
