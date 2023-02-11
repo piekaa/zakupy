@@ -23,13 +23,12 @@ export default class BacklogPage extends HTMLElement {
 
         this.append(new Header("Backlog"));
 
-        this.append(new BacklogInput((name) => {
+        this.append(new BacklogInput((newItems) => {
+            console.log(newItems);
                 fetch("/api/item",
                     {
                         method: "POST",
-                        body: JSON.stringify({
-                            name: name
-                        })
+                        body: JSON.stringify(newItems)
                     })
                     .then(res => {
                         window.location.reload();

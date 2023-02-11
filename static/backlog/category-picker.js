@@ -1,4 +1,3 @@
-import Circle from "/common-elements/circle.js";
 import Categories from "/kategorie/categories.js";
 import CategoryPickerListItem from "/backlog/category-picker-list-item.js";
 

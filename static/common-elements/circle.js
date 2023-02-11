@@ -24,6 +24,11 @@ export default class Circle extends HTMLElement {
         this.style.height = `${this.size}px`;
         this.style.background = this.color;
     }
+
+    setColor(color) {
+        this.color = color;
+        this.style.background = this.color;
+    }
 }
 
 customElements.define("piekoszek-circle", Circle);

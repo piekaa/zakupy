@@ -10,7 +10,7 @@ export default class YesNoPopup extends HTMLElement {
         this.innerHTML = `
         <style>
             piekoszek-yes-no-popup {
-                position:absolute;
+                position:fixed;
                 top: 0;
                 width: 100vw;
                 height: 100vh;

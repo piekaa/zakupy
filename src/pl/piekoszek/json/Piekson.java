@@ -49,7 +49,8 @@ public class Piekson {
                 ARRAY_BEGIN
         });
         tt.put(VALUE_BEGIN, new T[]{
-                VALUE
+                VALUE,
+                VALUE_END
         });
         tt.put(ARRAY_VALUE_BEGIN, new T[]{
                 ARRAY_VALUE
