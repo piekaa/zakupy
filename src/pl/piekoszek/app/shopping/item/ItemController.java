@@ -28,7 +28,7 @@ class ItemController implements EndpointsProvider {
         if(itemsToAdd.delimiter.isBlank()) {
             addItem(itemsToAdd.text, itemsToAdd.defaultCategory, info);
         } else {
-            for (String itemName : itemsToAdd.text.split(itemsToAdd.delimiter)) {
+            for (String itemName : itemsToAdd.text.split(" " + itemsToAdd.delimiter + " ")) {
                 addItem(itemName, itemsToAdd.defaultCategory, info);
             }
         }
