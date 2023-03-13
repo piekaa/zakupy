@@ -29,6 +29,16 @@ class CartController implements EndpointsProvider {
         return new ResponseInfo(ResponseStatus.OK);
     };
 
+    private MessageHandler<Object> addToMissing = (info, body) -> {
+        setMissing(info, true, info);
+        return new ResponseInfo(ResponseStatus.OK);
+    };
+
+    private MessageHandler<Object> removeFromMissing = (info, body) -> {
+        setMissing(info, false, info);
+        return new ResponseInfo(ResponseStatus.OK);
+    };
+
     private MessageHandler<FinishRequest> finish = (info, body) -> {
         var query = """
                 {
@@ -54,12 +64,20 @@ class CartController implements EndpointsProvider {
         mongo.update(CollectionUtil.collectionByUser(COLLECTION, info), item);
     }
 
+    private void setMissing(RequestInfo requestInfo, boolean missing, RequestInfo info) {
+        var item = mongo.getById(requestInfo.getPathParams().get("id"), CollectionUtil.collectionByUser(COLLECTION, info), Item.class);
+        item.missing = missing;
+        mongo.update(CollectionUtil.collectionByUser(COLLECTION, info), item);
+    }
+
     @Override
     public EndpointInfo[] endpoints() {
         return new EndpointInfo[]{
                 new EndpointInfo("PUT", "/api/cart/:id", addToCart, basicAuthMessageHandler, Object.class),
-                new EndpointInfo("POST", "/api/cart/finish", finish, basicAuthMessageHandler, FinishRequest.class),
-                new EndpointInfo("DELETE", "/api/cart/:id", removeFromCart, basicAuthMessageHandler, Object.class)
+                new EndpointInfo("DELETE", "/api/cart/:id", removeFromCart, basicAuthMessageHandler, Object.class),
+                new EndpointInfo("PUT", "/api/missing/:id", addToMissing, basicAuthMessageHandler, Object.class),
+                new EndpointInfo("DELETE", "/api/missing/:id", removeFromMissing, basicAuthMessageHandler, Object.class),
+                new EndpointInfo("POST", "/api/cart/finish", finish, basicAuthMessageHandler, FinishRequest.class)
         };
     }
 }

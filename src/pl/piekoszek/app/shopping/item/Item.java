@@ -9,6 +9,7 @@ public class Item {
     public String _id;
     public String name;
     public boolean inCart;
+    public boolean missing;
     public List<Category> categories = new ArrayList<>();
 
     public Item(String name) {

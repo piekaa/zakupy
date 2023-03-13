@@ -26,7 +26,7 @@ export default class ShoppingPage extends HTMLElement {
                 .items {
                     display: flex;
                     flex-direction: column;
-                    gap: 8px;
+                    gap: 2px;
                     font-size: 1.3em;
                 }
                 
@@ -53,6 +53,7 @@ export default class ShoppingPage extends HTMLElement {
                     console.log(categories);
                     this.allItems
                         .sort((a, b) => a.inCart - b.inCart)
+                        .sort((a, b) => a.missing - b.missing)
                         .forEach(item => {
                             if (categories.some(c => item.categories.map(ic => ic._id).includes(c))) {
                                 itemsDiv.append(new ShoppingItem(item))
