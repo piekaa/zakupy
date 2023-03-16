@@ -50,15 +50,21 @@ export default class ShoppingPage extends HTMLElement {
                 this.append(new ShoppingFilters(categories => {
                     this.currentCategories = categories;
                     itemsDiv.innerHTML = "";
-                    console.log(categories);
+                    let previousId = undefined;
                     this.allItems
                         .sort((a, b) => a.inCart - b.inCart)
                         .sort((a, b) => a.missing - b.missing)
                         .forEach(item => {
                             if (categories.some(c => item.categories.map(ic => ic._id).includes(c))) {
-                                itemsDiv.append(new ShoppingItem(item))
+                                itemsDiv.append(new ShoppingItem(item, previousId));
+                                previousId = item._id;
                             }
                         })
+                    const scroll = sessionStorage.getItem("scrollTo");
+                    if (scroll) {
+                        window.scrollTo(0, parseInt(scroll));
+                    }
+                    document.getElementById(new URLSearchParams(window.location.search).get("scrollToId"))?.scrollIntoView();
                 }));
 
                 this.append(itemsDiv);

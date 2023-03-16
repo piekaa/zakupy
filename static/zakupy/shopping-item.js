@@ -1,16 +1,17 @@
 export default class ShoppingItem extends HTMLElement {
 
-    id
     name
     inCart
     missing
+    previousItemId
 
-    constructor(item) {
+    constructor(item, previousItemId) {
         super();
         this.name = item.name;
         this.id = item._id;
         this.inCart = item.inCart;
         this.missing = item.missing || false;
+        this.previousItemId = previousItemId;
     }
 
     connectedCallback() {
@@ -73,7 +74,10 @@ export default class ShoppingItem extends HTMLElement {
                     {
                         method: this.missing ? "DELETE" : "PUT"
                     })
-                    .then(() => window.location.reload())
+                    .then(() => {
+                        sessionStorage.setItem('scrollTo', window.scrollY+"");
+                        window.location.reload();
+                    })
             };
             buttons.append(missing);
         }
@@ -88,7 +92,10 @@ export default class ShoppingItem extends HTMLElement {
                 {
                     method: this.inCart ? "DELETE" : "PUT"
                 })
-                .then(() => window.location.reload())
+                .then(() => {
+                    sessionStorage.setItem('scrollTo', window.scrollY+"");
+                    window.location.reload();
+                })
         }
 
         buttons.append(cart);

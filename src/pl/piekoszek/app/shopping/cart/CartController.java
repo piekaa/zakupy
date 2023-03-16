@@ -61,6 +61,7 @@ class CartController implements EndpointsProvider {
     private void setInCart(RequestInfo requestInfo, boolean inCart, RequestInfo info) {
         var item = mongo.getById(requestInfo.getPathParams().get("id"), CollectionUtil.collectionByUser(COLLECTION, info), Item.class);
         item.inCart = inCart;
+        item.missing = false;
         mongo.update(CollectionUtil.collectionByUser(COLLECTION, info), item);
     }
 

@@ -32,8 +32,6 @@ public class BasicAuthMessageHandler implements MessageHandler<Object> {
     }
 
     private Map<String, String> wwwAuthenticateHeader() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("WWW-Authenticate", "basic");
-        return headers;
+        return Map.of("WWW-Authenticate", "basic");
     }
 }
