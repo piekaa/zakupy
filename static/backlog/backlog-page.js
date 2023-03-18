@@ -16,7 +16,7 @@ export default class BacklogPage extends HTMLElement {
                     margin-top: 32px;
                     display: flex;
                     flex-direction: column;
-                    gap: 12px;
+                    gap: 4px;
                 }
             </style>
         `;
@@ -50,6 +50,7 @@ export default class BacklogPage extends HTMLElement {
                     itemsContainer.append(new BacklogItem(item._id, item.name, item.categories));
                     itemsContainer.append(new Line());
                 })
+                window.scrollTo(0, parseInt(sessionStorage.getItem("scrollTo") ?? "0"));
             })
     }
 

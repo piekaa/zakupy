@@ -64,6 +64,7 @@ export default class DefaultCategoryPicker extends HTMLElement {
                     const categoryItem = new CategoryPickerListItem(category.name, category.color);
                     categoryItem.onclick = () => {
                         this.callback(category);
+                        localStorage.lastCategory = JSON.stringify(category);
                         this.remove();
                     }
                     document.getElementById("allCategories").append(categoryItem);

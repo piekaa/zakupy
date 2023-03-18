@@ -28,9 +28,13 @@ export default class BacklogItem extends HTMLElement {
                 display: flex;
                 flex: 1;
                 gap: 10px;
-                font-size: 1.3em;
+                font-size: 1.2em;
                 align-items: center;
                 flex-wrap: wrap;
+            }
+            
+            piekoszek-backlog-item button {
+                font-size: 1em;
             }
             
         </style>

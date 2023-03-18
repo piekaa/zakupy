@@ -16,12 +16,8 @@ export default class CategoryPicker extends HTMLElement {
 
         this.innerHTML = `
         <style> 
-            body {
-                position: fixed;
-            }
-            
             piekoszek-category-picker {
-                position:absolute;
+                position:fixed;
                 margin-left: -8px;
                 top: 0;
                 width: 100vw;
@@ -76,7 +72,7 @@ export default class CategoryPicker extends HTMLElement {
                     })
                 })
                     .then(() => {
-                        this.remove();
+                        sessionStorage.setItem('scrollTo', window.scrollY+"");
                         window.location.reload();
                     });
             }
@@ -102,7 +98,7 @@ export default class CategoryPicker extends HTMLElement {
                             })
                         })
                             .then(() => {
-                                this.remove();
+                                sessionStorage.setItem('scrollTo', window.scrollY+"");
                                 window.location.reload();
                             })
                     }

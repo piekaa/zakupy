@@ -60,10 +60,7 @@ export default class ShoppingPage extends HTMLElement {
                                 previousId = item._id;
                             }
                         })
-                    const scroll = sessionStorage.getItem("scrollTo");
-                    if (scroll) {
-                        window.scrollTo(0, parseInt(scroll));
-                    }
+                    window.scrollTo(0, parseInt(sessionStorage.getItem("scrollTo") ?? "0"));
                     document.getElementById(new URLSearchParams(window.location.search).get("scrollToId"))?.scrollIntoView();
                 }));
 

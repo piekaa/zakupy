@@ -51,21 +51,22 @@ export default class BacklogInput extends HTMLElement {
 
         backlogPanel.innerHTML = `
         <select id="newItemsDelimiter">
+            <option value="i">i</option>
             <option value=""></option>
             <option value="dalej">dalej</option>
-            <option value="i">i</option>
         </select>
         `;
 
         backlogPanel.classList.add("backlog-input-panel")
 
-        const defaultCategory = new Circle("#000", 40);
-        let selectedCategory = undefined;
+        let selectedCategory = JSON.parse(localStorage.lastCategory ?? "null") ?? undefined;
+        const defaultCategory = new Circle(selectedCategory?.color ?? "#000", 40);
+
+
         defaultCategory.onclick = () => {
             this.append(new DefaultCategoryPicker((category) => {
                 selectedCategory = category;
                 defaultCategory.setColor(category.color);
-                defaultCategory._id = category._id;
             }));
         };
 
