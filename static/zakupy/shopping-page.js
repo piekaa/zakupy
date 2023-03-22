@@ -1,7 +1,7 @@
 import Header from "/structure/header.js";
 import ShoppingFilters from "/zakupy/shopping-filters.js";
 import ShoppingItem from "/zakupy/shopping-item.js";
-import YesNoPopup from "/common-elements/yes-no-popup.js";
+import YesNoNumberInputPopup from "/common-elements/yes-no-number-input-popup.js";
 
 export default class ShoppingPage extends HTMLElement {
 
@@ -71,22 +71,24 @@ export default class ShoppingPage extends HTMLElement {
                 buyButton.classList.add("buy-button");
 
                 buyButton.onclick = () => {
-                    new YesNoPopup("Na pewno zakończyć zakupy?", () => {
-                        fetch("/api/cart/finish",
-                            {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    categories: this.currentCategories
+                    new YesNoNumberInputPopup("Na pewno zakończyć zakupy?",
+                        "Koszt", (price) => {
+                            fetch("/api/cart/finish",
+                                {
+                                    method: "POST",
+                                    body: JSON.stringify({
+                                        categories: this.currentCategories,
+                                        price: Math.round(parseFloat(price || "0") * 100)
+                                    })
                                 })
-                            })
-                            .then(res => {
-                                if (res.ok) {
-                                    window.location.reload();
-                                } else {
-                                    console.trace(res.status)
-                                }
-                            })
-                    });
+                                .then(res => {
+                                    if (res.ok) {
+                                        window.location.reload();
+                                    } else {
+                                        console.trace(res.status)
+                                    }
+                                })
+                        });
                 }
                 this.append(buyButton);
             });

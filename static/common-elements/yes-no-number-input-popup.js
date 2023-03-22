@@ -1,9 +1,9 @@
-export default class YesNoPopup extends HTMLElement {
+export default class YesNoNumberInputPopup extends HTMLElement {
 
     onYes
     onNo
 
-    constructor(message, onYes, onNo) {
+    constructor(message, inputText, onYes, onNo) {
         super();
         this.onYes = onYes;
         this.onNo = onNo;
@@ -25,15 +25,21 @@ export default class YesNoPopup extends HTMLElement {
                 font-size: 1.3em;
             
                 gap: 16px;
-            
+                align-items: center;       
                 display: grid;
                 grid-template: 
                             "a a"
+                            "d e"
                             "b c";
             }
             
            .popup-content button {
                 font-size: 1em;
+           }
+           
+           piekoszek-yes-no-popup input {
+                font-size: 1em;
+                padding: 4px;
            }
             
         </style>
@@ -43,8 +49,15 @@ export default class YesNoPopup extends HTMLElement {
 
         const messageDiv = document.createElement("div");
         messageDiv.innerText = message;
-
         messageDiv.style.gridArea = "a";
+
+        const inputDiv = document.createElement("div");
+        inputDiv.innerText = inputText;
+        inputDiv.style.gridArea = "d";
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.style.gridArea = "e";
 
         const yesButton = document.createElement("button");
         yesButton.style.gridArea = "b";
@@ -56,7 +69,7 @@ export default class YesNoPopup extends HTMLElement {
 
         yesButton.onclick = () => {
             this.remove();
-            this.onYes?.();
+            this.onYes?.(input.value);
         }
 
         noButton.onclick = () => {
@@ -67,6 +80,10 @@ export default class YesNoPopup extends HTMLElement {
         noButton.innerText = "Nie";
 
         contentDiv.append(messageDiv);
+
+        contentDiv.append(inputText);
+
+        contentDiv.append(input);
 
         contentDiv.append(yesButton)
         contentDiv.append(noButton);
@@ -80,4 +97,4 @@ export default class YesNoPopup extends HTMLElement {
 
 }
 
-customElements.define("piekoszek-yes-no-popup", YesNoPopup);
+customElements.define("piekoszek-yes-no-popup", YesNoNumberInputPopup);

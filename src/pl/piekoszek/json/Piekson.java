@@ -252,19 +252,21 @@ public class Piekson {
     }
 
     private static Object createCollection(Class<?> type, Class<?> componentType, Object collection) {
+        var collectionToSet = new ArrayList();
 
-        List collectionToSet = new ArrayList();
-        if (collection instanceof Map[]) {
-            Map<String, Object>[] arr = (Map<String, Object>[]) collection;
-            for (int i = 0; i < arr.length; i++) {
-                collectionToSet.add(parseObject(componentType, arr[i]));
-            }
-        } else {
-            Object array = createArray(collection.getClass().getComponentType(), collection);
-            for (int i = 0; i < Array.getLength(array); i++) {
-                collectionToSet.add(Array.get(array, i));
+        if (collection instanceof Object[] array) {
+            if (array.length > 0 && array[0] instanceof Map) {
+                for (Object item : array) {
+                    collectionToSet.add(parseObject(componentType, (Map<String, Object>) item));
+                }
+            } else {
+                Object arr = createArray(collection.getClass().getComponentType(), collection);
+                for (int i = 0; i < Array.getLength(arr); i++) {
+                    collectionToSet.add(Array.get(arr, i));
+                }
             }
         }
+
         if (type == Set.class) {
             return new HashSet(collectionToSet);
         }

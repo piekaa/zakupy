@@ -2,6 +2,7 @@ package pl.piekoszek.app.shopping.cart;
 
 import pl.piekoszek.app.shopping.auth.CollectionUtil;
 import pl.piekoszek.app.shopping.item.Item;
+import pl.piekoszek.app.shopping.stats.PurchaseService;
 import pl.piekoszek.backend.http.server.*;
 import pl.piekoszek.json.Piekson;
 import pl.piekoszek.mongo.Mongo;
@@ -12,10 +13,12 @@ class CartController implements EndpointsProvider {
     private static final String COLLECTION = "item";
 
     private Mongo mongo;
+    private PurchaseService purchaseService;
     private BasicAuthMessageHandler basicAuthMessageHandler;
 
-    CartController(Mongo mongo, BasicAuthMessageHandler basicAuthMessageHandler) {
+    CartController(Mongo mongo, PurchaseService purchaseService, BasicAuthMessageHandler basicAuthMessageHandler) {
         this.mongo = mongo;
+        this.purchaseService = purchaseService;
         this.basicAuthMessageHandler = basicAuthMessageHandler;
     }
 
@@ -40,7 +43,7 @@ class CartController implements EndpointsProvider {
     };
 
     private MessageHandler<FinishRequest> finish = (info, body) -> {
-        var query = """
+        var queryItemsInCart = """
                 {
                   "inCart": true,
                   "categories": {
@@ -52,8 +55,37 @@ class CartController implements EndpointsProvider {
                   }
                 }
                 """.formatted(Piekson.toJson(body.categories));
-        System.out.println(query);
-        mongo.delete(CollectionUtil.collectionByUser(COLLECTION, info), query);
+
+        var collection = CollectionUtil.collectionByUser(COLLECTION, info);
+
+        var items = mongo.queryAll(collection, queryItemsInCart, Item.class);
+
+        purchaseService.savePurchase(items, body.price);
+        mongo.delete(collection, queryItemsInCart);
+
+        var queryMissingItems = """
+                {
+                  "missing": true,
+                  "categories": {
+                    "$elemMatch": {
+                        "_id": {
+                            "$in": %s
+                        }
+                    }
+                  }
+                }
+                """.formatted(Piekson.toJson(body.categories));
+
+        //language=JSON
+        var clearMissingFlagQuery = """
+                {
+                  "$set": {
+                    "missing": false
+                  }
+                }
+                """;
+
+        mongo.update(collection, queryMissingItems, clearMissingFlagQuery);
 
         return new ResponseInfo(ResponseStatus.OK);
     };

@@ -4,4 +4,5 @@ import java.util.List;
 
 public class FinishRequest {
     public List<String> categories;
+    public int price;
 }

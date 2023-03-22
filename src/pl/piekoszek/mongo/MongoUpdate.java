@@ -16,8 +16,9 @@ class MongoUpdate {
 
         buffer.addLittleEndian(0); // ZERO
         buffer.addCString(db + "." + collection);
-        //todo can be set as upsert
-        buffer.addLittleEndian(0); //flags
+
+        // multi update
+        buffer.addLittleEndian( 2); //flags
 
         buffer.add(Piekson.jsonToBson(query));
         buffer.add(Piekson.jsonToBson(updateQuery));

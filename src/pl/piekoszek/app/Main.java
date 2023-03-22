@@ -4,6 +4,7 @@ import pl.piekoszek.app.shopping.auth.ShoppingBasicAuthHandler;
 import pl.piekoszek.app.shopping.cart.CartConfig;
 import pl.piekoszek.app.shopping.category.CategoryConfig;
 import pl.piekoszek.app.shopping.item.ItemConfig;
+import pl.piekoszek.app.shopping.stats.PurchaseService;
 import pl.piekoszek.backend.http.server.BasicAuthMessageHandler;
 import pl.piekoszek.backend.http.server.HttpServer;
 import pl.piekoszek.backend.tcp.client.TcpClient;
@@ -23,7 +24,7 @@ public class Main {
 
         httpServer.register(CategoryConfig.controller(mongo, basicAuthHandler).endpoints());
         httpServer.register(ItemConfig.controller(mongo, basicAuthHandler).endpoints());
-        httpServer.register(CartConfig.controller(mongo, basicAuthHandler).endpoints());
+        httpServer.register(CartConfig.controller(mongo, new PurchaseService(mongo), basicAuthHandler).endpoints());
 
 
         new TcpServer(httpServer, 2106);

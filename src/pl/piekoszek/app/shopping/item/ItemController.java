@@ -25,7 +25,7 @@ class ItemController implements EndpointsProvider {
 
     private MessageHandler<AddItemsRequest> add = (info, itemsToAdd) -> {
 
-        if(itemsToAdd.delimiter.isBlank()) {
+        if (itemsToAdd.delimiter.isBlank()) {
             addItem(itemsToAdd.text, itemsToAdd.defaultCategory, info);
         } else {
             for (String itemName : itemsToAdd.text.split(" " + itemsToAdd.delimiter + " ")) {
@@ -38,7 +38,7 @@ class ItemController implements EndpointsProvider {
     private void addItem(String name, Category defaultCategory, RequestInfo userInfo) {
         var item = new Item(name.trim());
         item._id = UUID.randomUUID().toString();
-        if( defaultCategory != null) {
+        if (defaultCategory != null) {
             item.categories = List.of(defaultCategory);
         }
         mongo.insert(CollectionUtil.collectionByUser(COLLECTION, userInfo), item);

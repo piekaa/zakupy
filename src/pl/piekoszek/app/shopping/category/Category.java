@@ -1,6 +1,5 @@
 package pl.piekoszek.app.shopping.category;
 
-//todo remove public
 public class Category {
     public String _id;
     public String name;
