@@ -33,6 +33,12 @@ export default class YesNoNumberInputPopup extends HTMLElement {
                             "b c";
             }
             
+            @media only screen and (max-width: 400px) {
+                .popup-content {
+                    font-size: 1em
+                }
+            }
+            
            .popup-content button {
                 font-size: 1em;
            }
