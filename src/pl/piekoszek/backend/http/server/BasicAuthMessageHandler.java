@@ -26,9 +26,9 @@ public class BasicAuthMessageHandler implements MessageHandler<Object> {
                 requestInfo.authInfo = new AuthInfo(username, password);
                 return null;
             }
-            return new ResponseInfo("Invalid username, password or authorization type", wwwAuthenticateHeader(), ResponseStatus.UNAUTHORIZED);
+            return new ResponseInfo("Invalid username, password or authorization type", ResponseStatus.UNAUTHORIZED);
         }
-        return new ResponseInfo("Authorization header is missing", wwwAuthenticateHeader(), ResponseStatus.UNAUTHORIZED);
+        return new ResponseInfo("Authorization header is missing", ResponseStatus.UNAUTHORIZED);
     }
 
     private Map<String, String> wwwAuthenticateHeader() {

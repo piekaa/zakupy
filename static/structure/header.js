@@ -72,6 +72,9 @@ export default class Header extends HTMLElement {
             <a href="/backlog">Backlog</a>
             <a href="/kategorie">Kategorie</a>
             <a href="/zakupy">Zakupy</a>
+            <br/>
+            <br/>
+            <a href="/logout">Logout</a>
         </div>
         `;
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        div {
+            display: flex;
+            flex-direction: column;
+            margin-top: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <input placeholder="login" id="username" type="text">
+    <input placeholder="password" id="password" type="password">
+    <button onclick="login()">Login</button>
+</div>
+
+
+
+</body>
+
+<script>
+    function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        fetch("api/item", {
+            headers: {
+                'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
+            }
+        })
+            .then(res => {
+                if( res.ok) {
+                    localStorage.setItem("auth", btoa(`${username}:${password}`));
+                    window.location.href="/";
+                } else {
+                    alert("Złe hasło");
+                }
+            })
+    }
+</script>
+
+</html>

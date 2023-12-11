@@ -1,4 +1,5 @@
 import Circle from "/common-elements/circle.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class CategoryItem extends HTMLElement {
 
@@ -42,6 +43,7 @@ export default class CategoryItem extends HTMLElement {
         const button = document.createElement("button");
         button.onclick = () => {
             fetch(`/api/category/${this.id}`, {
+                headers: Authorization.header(),
                 method: "delete"
             })
                 .then(() => {

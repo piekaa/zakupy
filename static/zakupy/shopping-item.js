@@ -1,3 +1,5 @@
+import Authorization from "/auth/Authorization.js";
+
 export default class ShoppingItem extends HTMLElement {
 
     name
@@ -72,6 +74,7 @@ export default class ShoppingItem extends HTMLElement {
             missing.onclick = () => {
                 fetch(`/api/missing/${this.id}`,
                     {
+                        headers: Authorization.header(),
                         method: this.missing ? "DELETE" : "PUT"
                     })
                     .then(() => {
@@ -90,6 +93,7 @@ export default class ShoppingItem extends HTMLElement {
         cart.onclick = () => {
             fetch(`/api/cart/${this.id}`,
                 {
+                    headers: Authorization.header(),
                     method: this.inCart ? "DELETE" : "PUT"
                 })
                 .then(() => {

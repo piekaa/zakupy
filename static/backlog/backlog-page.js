@@ -2,6 +2,7 @@ import Header from "/structure/header.js";
 import BacklogInput from "/backlog/backlog-input.js";
 import BacklogItem from "/backlog/backlog-item.js";
 import Line from "/common-elements/line.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class BacklogPage extends HTMLElement {
 
@@ -27,6 +28,7 @@ export default class BacklogPage extends HTMLElement {
             console.log(newItems);
                 fetch("/api/item",
                     {
+                        headers: Authorization.header(),
                         method: "POST",
                         body: JSON.stringify(newItems)
                     })
@@ -43,7 +45,9 @@ export default class BacklogPage extends HTMLElement {
 
         this.classList.add("piekoszek-page");
 
-        fetch("/api/item")
+        fetch("/api/item", {
+            headers: Authorization.header(),
+        })
             .then(res => res.json())
             .then(items => {
                 items.forEach(item => {

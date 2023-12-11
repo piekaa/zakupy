@@ -2,6 +2,7 @@ import Header from "/structure/header.js";
 import ShoppingFilters from "/zakupy/shopping-filters.js";
 import ShoppingItem from "/zakupy/shopping-item.js";
 import YesNoNumberInputPopup from "/common-elements/yes-no-number-input-popup.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class ShoppingPage extends HTMLElement {
 
@@ -42,7 +43,10 @@ export default class ShoppingPage extends HTMLElement {
         itemsDiv.classList.add("items")
 
 
-        fetch("/api/item")
+        fetch("/api/item",
+            {
+                headers: Authorization.header(),
+            })
             .then(res => res.json())
             .then(items => {
                 this.allItems = items;
@@ -76,6 +80,7 @@ export default class ShoppingPage extends HTMLElement {
                             fetch("/api/cart/finish",
                                 {
                                     method: "POST",
+                                    headers: Authorization.header(),
                                     body: JSON.stringify({
                                         categories: this.currentCategories,
                                         price: Math.round(parseFloat(price || "0") * 100)

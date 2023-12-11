@@ -1,6 +1,7 @@
 import Header from "/structure/header.js";
 import CategoryInput from "/kategorie/category-input.js";
 import CategoryItem from "/kategorie/category-item.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class CategoryPage extends HTMLElement {
 
@@ -22,7 +23,9 @@ export default class CategoryPage extends HTMLElement {
             </style>
         `;
 
-        fetch("/api/category")
+        fetch("/api/category", {
+            headers: Authorization.header(),
+        })
             .then(res => res.json())
             .then(categories => {
                 categories.forEach(category => {
@@ -41,6 +44,7 @@ export default class CategoryPage extends HTMLElement {
 
             fetch("/api/category",
                 {
+                    headers: Authorization.header(),
                     method: "POST",
                     body: JSON.stringify({
                         name: text,

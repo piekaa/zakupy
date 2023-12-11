@@ -1,5 +1,6 @@
 import Categories from "/kategorie/categories.js";
 import CategoryPickerListItem from "/backlog/category-picker-list-item.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class CategoryPicker extends HTMLElement {
 
@@ -65,6 +66,7 @@ export default class CategoryPicker extends HTMLElement {
             const categoryItem = new CategoryPickerListItem(category.name, category.color);
             categoryItem.onclick = () => {
                 fetch("/api/item/category", {
+                    headers: Authorization.header(),
                     method: "PUT",
                     body: JSON.stringify({
                         _id: this.itemId,
@@ -89,6 +91,7 @@ export default class CategoryPicker extends HTMLElement {
                     const categoryItem = new CategoryPickerListItem(category.name, category.color);
                     categoryItem.onclick = () => {
                         fetch("/api/item/category", {
+                            headers: Authorization.header(),
                             method: "PUT",
                             body: JSON.stringify({
                                 _id: this.itemId,

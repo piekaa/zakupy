@@ -1,5 +1,6 @@
 import CategoryPicker from "/backlog/category-picker.js";
 import Circle from "/common-elements/circle.js";
+import Authorization from "/auth/Authorization.js";
 
 export default class BacklogItem extends HTMLElement {
 
@@ -44,6 +45,7 @@ export default class BacklogItem extends HTMLElement {
         button.onclick = () => {
             console.log("click");
             fetch(`/api/item/${this.id}`, {
+                headers: Authorization.header(),
                 method: "delete"
             })
                 .then(() => {
